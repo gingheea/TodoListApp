@@ -1,4 +1,4 @@
-namespace TodoListApp.Core.Controllers.HomeArea
+namespace TodoListApp.WebApi.Controllers.HomeArea
 {
     using Microsoft.AspNetCore.Mvc;
 

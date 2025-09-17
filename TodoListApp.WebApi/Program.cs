@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TodoListApp.Services.Database;
 using TodoListApp.Services.Helpers;
 using TodoListApp.Services.Identity;
 using TodoListApp.WebApi.Models.UserModels;
@@ -11,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add UsersDbContext
 builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("UsersDb")));
+
+builder.Services.AddDbContext<TodoListDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TodoListDb")));
 
 // Add Identity
 builder.Services.AddIdentity<User, IdentityRole<int>>()
