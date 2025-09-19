@@ -1,7 +1,6 @@
-namespace TodoListApp.WebApi.Models.UserModels
+namespace TodoListApp.Services.Identity.Entities
 {
     using Microsoft.AspNetCore.Identity;
-    using TodoListApp.WebApi.Models.Models;
 
     public class User : IdentityUser<int>
     {

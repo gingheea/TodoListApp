@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using TodoListApp.Services.Database;
 using TodoListApp.Services.Helpers;
 using TodoListApp.Services.Identity;
-using TodoListApp.WebApi.Models.UserModels;
+using TodoListApp.Services.Identity.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,7 +1,7 @@
 namespace TodoListApp.Services.Database
 {
     using Microsoft.EntityFrameworkCore;
-    using TodoListApp.WebApi.Models.Models;
+    using TodoListApp.Services.Database.Entities;
 
     public class TodoListDbContext : DbContext
     {
@@ -10,7 +10,7 @@ namespace TodoListApp.Services.Database
         {
         }
 
-        public DbSet<WebApi.Models.Models.Group> Groups { get; set; }
+        public DbSet<Group> Groups { get; set; }
 
         public DbSet<TodoList> TodoLists { get; set; }
 

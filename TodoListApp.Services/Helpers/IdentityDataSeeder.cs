@@ -5,7 +5,7 @@ namespace TodoListApp.Services.Helpers
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore.Metadata.Internal;
     using Microsoft.Extensions.DependencyInjection;
-    using TodoListApp.WebApi.Models.UserModels;
+    using TodoListApp.Services.Identity.Entities;
 
     public static class IdentityDataSeeder
     {

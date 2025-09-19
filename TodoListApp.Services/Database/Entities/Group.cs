@@ -1,9 +1,8 @@
-namespace TodoListApp.WebApi.Models.Models
+namespace TodoListApp.Services.Database.Entities
 {
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using TodoListApp.WebApi.Models.UserModels;
 
     [Table("group")]
     public class Group

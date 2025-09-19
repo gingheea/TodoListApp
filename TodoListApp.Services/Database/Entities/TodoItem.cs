@@ -1,4 +1,4 @@
-namespace TodoListApp.WebApi.Models.Models
+namespace TodoListApp.Services.Database.Entities
 {
     using System;
     using System.ComponentModel.DataAnnotations;

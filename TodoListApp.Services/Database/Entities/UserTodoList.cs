@@ -1,7 +1,6 @@
-namespace TodoListApp.WebApi.Models.Models
+namespace TodoListApp.Services.Database.Entities
 {
     using System.ComponentModel.DataAnnotations.Schema;
-    using TodoListApp.WebApi.Models.UserModels;
 
     public enum TodoListRole
     {

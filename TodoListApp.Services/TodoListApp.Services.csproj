@@ -23,6 +23,8 @@
 
   <ItemGroup>
     <Folder Include="Migrations\TodoListDB\" />
+    <Folder Include="Services\" />
+    <Folder Include="Repositories\" />
   </ItemGroup>
 
   <PropertyGroup>
