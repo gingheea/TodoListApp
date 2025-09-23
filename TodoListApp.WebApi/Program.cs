@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using TodoListApp.Services.Database;
-using TodoListApp.Services.Helpers;
-using TodoListApp.Services.Identity;
-using TodoListApp.Services.Identity.Entities;
+using TodoListApp.Contracts.Interfaces;
+using TodoListApp.Entities.Entities;
+using TodoListApp.Infrastructure.Data.Database;
+using TodoListApp.Infrastructure.Data.Helpers;
+using TodoListApp.Infrastructure.Data.Identity;
+using TodoListApp.Infrastructure.Data.Repositories;
+using TodoListApp.Services.Mappings;
+using TodoListApp.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +45,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<GroupService>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
