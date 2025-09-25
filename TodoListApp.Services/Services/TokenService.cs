@@ -71,5 +71,4 @@ namespace TodoListApp.Services.Services
             return jwt.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
         }
     }
-
 }

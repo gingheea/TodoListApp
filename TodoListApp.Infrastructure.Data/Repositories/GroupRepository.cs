@@ -47,7 +47,7 @@ namespace TodoListApp.Infrastructure.Data.Repositories
                 throw new KeyNotFoundException($"Group with ID {id} not found.");
             }
 
-            _ = this.DeleteAsync(groupRemove);
+            await this.DeleteAsync(groupRemove);
 
         }
 
@@ -80,6 +80,10 @@ namespace TodoListApp.Infrastructure.Data.Repositories
                 group.Name = entity.Name;
                 group.CreatedByUserId = entity.CreatedByUserId;
                 _ = await this.context.SaveChangesAsync();
+            }
+            else
+            {
+
             }
 
         }

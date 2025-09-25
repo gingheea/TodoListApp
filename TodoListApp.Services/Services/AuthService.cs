@@ -68,7 +68,7 @@ namespace TodoListApp.Services.Services
 
         public async Task<(bool Success, object Response)> RefreshJwtToken(int userId)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await this._userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
                 return (false, new { message = "User not found" });

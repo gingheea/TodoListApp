@@ -16,7 +16,7 @@ namespace TodoListApp.Services.Services
             this.mapper = mapper;
         }
 
-        public async void Add(GroupModel item)
+        public async Task Add(GroupModel item)
         {
             ArgumentNullException.ThrowIfNull(item);
 
@@ -30,7 +30,7 @@ namespace TodoListApp.Services.Services
             await this.repository.AddAsync(entity);
         }
 
-        public async void Delete(int id)
+        public async Task Delete(int id)
         {
             if (id <= 0)
             {
@@ -40,22 +40,24 @@ namespace TodoListApp.Services.Services
             await this.repository.DeleteByIdAsync(id);
         }
 
-        public IEnumerable<GroupModel> GetAll(int pageNumber = 1, int rowCount = 0)
+        public async Task<IEnumerable<GroupModel>> GetAllAsync(int pageNumber = 1, int rowCount = 10)
         {
-            return this.mapper.Map<IEnumerable<GroupModel>>(this.repository.GetAllAsync(pageNumber, rowCount).Result);
+            var groups = await this.repository.GetAllAsync(pageNumber, rowCount);
+            return this.mapper.Map<IEnumerable<GroupModel>>(groups);
         }
 
-        public GroupModel GetById(int id)
+        public async Task<GroupModel> GetById(int id)
         {
             if (id <= 0)
             {
                 throw new ArgumentException("Invalid group id");
             }
 
-            return this.mapper.Map<GroupModel>(this.repository.GetByIdAsync(id).Result);
+            var group = await this.repository.GetByIdAsync(id);
+            return this.mapper.Map<GroupModel>(group);
         }
 
-        public void Update(GroupModel item)
+        public async Task Update(GroupModel item)
         {
             ArgumentNullException.ThrowIfNull(item);
 
@@ -71,7 +73,7 @@ namespace TodoListApp.Services.Services
 
             var entity = this.mapper.Map<Group>(item);
 
-            _ = this.repository.UpdateAsync(entity);
+            await this.repository.UpdateAsync(entity);
         }
     }
 }

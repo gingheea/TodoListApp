@@ -22,7 +22,6 @@ namespace TodoListApp.WebApi.Controllers.AuthArea
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto form)
         {
-
             try
             {
                 var (success, response) = await this._authService.LoginAsync(form);

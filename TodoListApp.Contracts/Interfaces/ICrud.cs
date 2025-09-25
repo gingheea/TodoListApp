@@ -2,10 +2,10 @@ namespace TodoListApp.Contracts.Interfaces
 {
     public interface ICrud<T>
     {
-        IEnumerable<T> GetAll(int pageNumber = 1, int rowCount = 0);
-        T GetById(int id);
-        void Add(T item);
-        void Update(T item);
-        void Delete(int id);
+        Task<IEnumerable<T>> GetAllAsync(int pageNumber = 1, int rowCount = 0);
+        Task<T> GetById(int id);
+        Task Add(T item);
+        Task Update(T item);
+        Task Delete(int id);
     }
 }
