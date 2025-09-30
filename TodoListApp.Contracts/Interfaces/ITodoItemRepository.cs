@@ -4,5 +4,6 @@ namespace TodoListApp.Contracts.Interfaces
 
     public interface ITodoItemRepository : IRepository<TodoItem>
     {
+        Task<TodoListRole?> GetUserRoleInListAsync(int userId, int listId);
     }
 }

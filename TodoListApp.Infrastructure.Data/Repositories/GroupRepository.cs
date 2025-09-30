@@ -66,7 +66,10 @@ namespace TodoListApp.Infrastructure.Data.Repositories
                 throw new ArgumentOutOfRangeException(nameof(id), "ID must be a non-negative integer.");
             }
 
-            return await this.context.Groups.FindAsync(id);
+            return await this.context.Groups
+                .Include(g => g.TodoLists)
+                .ThenInclude(tl => tl.TodoItems)
+                .FirstOrDefaultAsync();
         }
 
         public async Task UpdateAsync(Group entity)
@@ -83,7 +86,7 @@ namespace TodoListApp.Infrastructure.Data.Repositories
             }
             else
             {
-
+                throw new KeyNotFoundException($"Group with ID {entity.Id} not found.");
             }
 
         }

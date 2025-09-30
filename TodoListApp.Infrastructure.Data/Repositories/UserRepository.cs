@@ -1,38 +1,81 @@
+using Microsoft.EntityFrameworkCore;
 using TodoListApp.Contracts.Interfaces;
 using TodoListApp.Entities.Entities;
+using TodoListApp.Infrastructure.Data.Identity;
 
 namespace TodoListApp.Infrastructure.Data.Repositories
 {
-    class UserRepository : IUserRepository
+    public class UserRepository : IUserRepository
     {
+        private readonly UsersDbContext context;
+        public UserRepository(UsersDbContext context)
+        {
+            this.context = context;
+        }
         public Task AddAsync(User entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteAsync(User entity)
+        public async Task DeleteAsync(User entity)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(entity, nameof(entity));
+
+            _ = this.context.Users.Remove(entity);
+            _ = await this.context.SaveChangesAsync();
+
         }
 
-        public Task DeleteByIdAsync(int id)
+        public async Task DeleteByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            if (id < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(id), "ID must be a non-negative integer.");
+            }
+
+            var userRemove = await this.context.Users.FindAsync(id);
+
+            if (userRemove == null)
+            {
+                throw new KeyNotFoundException($"User with ID {id} not found.");
+            }
+
+            await this.DeleteAsync(userRemove);
         }
 
-        public Task<IEnumerable<User>> GetAllAsync(int pageNumber, int rowCount)
+        public async Task<IEnumerable<User>> GetAllAsync(int pageNumber, int rowCount)
         {
-            throw new NotImplementedException();
+            return await this.context.Users
+               .Skip((pageNumber - 1) * rowCount)
+               .Take(rowCount)
+               .ToListAsync();
         }
 
-        public Task<User?> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            if (id < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(id), "ID must be a non-negative integer.");
+            }
+
+            return await this.context.Users.FindAsync(id).AsTask();
         }
 
-        public Task UpdateAsync(User entity)
+        public async Task UpdateAsync(User entity)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(entity, nameof(entity));
+
+            var user = await this.context.Users.FindAsync(entity.Id);
+
+            if (user != null)
+            {
+                user.Nickname = entity.Nickname;
+                _ = await this.context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new KeyNotFoundException($"User with ID {entity.Id} not found.");
+            }
         }
     }
 }

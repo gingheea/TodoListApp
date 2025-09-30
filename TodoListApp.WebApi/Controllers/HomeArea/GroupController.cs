@@ -10,7 +10,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
 
     [ApiController]
     [Area("Home")]
-    [Route("api/home/[controller]")]
+    [Route("api/[area]/[controller]")]
     public class GroupController : ControllerBase
     {
         private readonly GroupService _groupService;
@@ -59,7 +59,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
             }
 
             this._logger.LogInformation("Group found id={Id}", id);
-            return this.Ok(this._mapper.Map<GroupDto>(group));
+            return this.Ok(this._mapper.Map<GroupDetailDto>(group));
         }
 
         [HttpPost]
@@ -74,25 +74,21 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
                 return this.BadRequest("Group data is required");
             }
 
-            if (groupCreateForm.CreatedByUserId == null)
+            var userIdClaim = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
             {
-                var userIdClaim = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userIdClaim))
-                {
-                    this._logger.LogWarning("Create: UserId not found in token");
-                    return this.Unauthorized("UserId not found in token");
-                }
+                this._logger.LogWarning("Create: UserId not found in token");
+                return this.Unauthorized("UserId not found in token");
+            }
 
-                if (!int.TryParse(userIdClaim, out int userId))
-                {
-                    this._logger.LogWarning("Create: Invalid UserId in token value={Claim}", userIdClaim);
-                    return this.Unauthorized("Invalid UserId in token");
-                }
-
-                groupCreateForm.CreatedByUserId = userId;
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                this._logger.LogWarning("Create: Invalid UserId in token value={Claim}", userIdClaim);
+                return this.Unauthorized("Invalid UserId in token");
             }
 
             var groupModel = this._mapper.Map<GroupModel>(groupCreateForm);
+            groupModel.CreatedByUserId = userId;
 
             this._logger.LogInformation("Creating group (name={Name}) by userId={UserId}", groupModel.Name, groupModel.CreatedByUserId);
 
@@ -100,7 +96,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
 
             this._logger.LogInformation("Group created with id={Id}", groupModel.Id);
 
-            return this.CreatedAtAction(nameof(this.GetById), new { id = groupModel.Id }, this._mapper.Map<GroupDto>(groupModel));
+            return this.CreatedAtAction(nameof(this.GetById), new { id = groupModel.Id }, this._mapper.Map<GroupDetailDto>(groupModel));
         }
 
         [HttpPut("{id}")]

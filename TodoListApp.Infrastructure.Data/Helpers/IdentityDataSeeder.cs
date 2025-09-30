@@ -13,7 +13,7 @@ namespace TodoListApp.Infrastructure.Data.Helpers
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
-            string[] roles = { "Admin", "User", "Owner", "Viewer", "Editor" };
+            string[] roles = { "Admin", "User"};
 
             foreach (var role in roles)
             {
