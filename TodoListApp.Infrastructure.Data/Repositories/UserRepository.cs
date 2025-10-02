@@ -1,17 +1,19 @@
-using Microsoft.EntityFrameworkCore;
-using TodoListApp.Contracts.Interfaces;
-using TodoListApp.Entities.Entities;
-using TodoListApp.Infrastructure.Data.Identity;
-
 namespace TodoListApp.Infrastructure.Data.Repositories
 {
+    using Microsoft.EntityFrameworkCore;
+    using TodoListApp.Contracts.Interfaces;
+    using TodoListApp.Entities.Entities;
+    using TodoListApp.Infrastructure.Data.Identity;
+
     public class UserRepository : IUserRepository
     {
         private readonly UsersDbContext context;
+
         public UserRepository(UsersDbContext context)
         {
             this.context = context;
         }
+
         public Task AddAsync(User entity)
         {
             throw new NotImplementedException();
@@ -23,7 +25,6 @@ namespace TodoListApp.Infrastructure.Data.Repositories
 
             _ = this.context.Users.Remove(entity);
             _ = await this.context.SaveChangesAsync();
-
         }
 
         public async Task DeleteByIdAsync(int id)

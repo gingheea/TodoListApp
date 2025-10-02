@@ -9,7 +9,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
     using TodoListApp.WebApi.Models.Models;
 
     [Area("Home")]
-    [Route("api/[area]/todolists/{listId}/todoitems")]
+    [Route("api/[area]/todolist/{listId}/todoitems")]
     [Route("api/[area]/todoitems")]
     [ApiController]
 #pragma warning disable CA1848

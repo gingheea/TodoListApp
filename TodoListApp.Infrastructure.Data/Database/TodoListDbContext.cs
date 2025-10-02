@@ -22,13 +22,16 @@ namespace TodoListApp.Infrastructure.Data.Database
         {
             base.OnModelCreating(modelBuilder);
 
+            ArgumentNullException.ThrowIfNull(modelBuilder);
+
             _ = modelBuilder.Entity<UserTodoList>()
                 .HasKey(utl => new { utl.UserId, utl.TodoListId });
 
             _ = modelBuilder.Entity<UserTodoList>()
                 .HasOne(utl => utl.TodoList)
                 .WithMany(tl => tl.UserTodoLists)
-                .HasForeignKey(utl => utl.TodoListId);
+                .HasForeignKey(utl => utl.TodoListId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             _ = modelBuilder.Entity<TodoList>()
                 .HasOne(tl => tl.Group)
@@ -40,6 +43,12 @@ namespace TodoListApp.Infrastructure.Data.Database
                 .HasOne(ti => ti.TodoList)
                 .WithMany(tl => tl.TodoItems)
                 .HasForeignKey(ti => ti.TodoListId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            _ = modelBuilder.Entity<Group>()
+                .HasMany(g => g.TodoLists)
+                .WithOne(tl => tl.Group)
+                .HasForeignKey(tl => tl.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

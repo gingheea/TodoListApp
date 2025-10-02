@@ -22,7 +22,6 @@ namespace TodoListApp.Infrastructure.Data.Repositories
 
             _ = await this.context.Groups.AddAsync(entity);
             _ = await this.context.SaveChangesAsync();
-
         }
 
         public async Task DeleteAsync(Group entity)
@@ -48,7 +47,6 @@ namespace TodoListApp.Infrastructure.Data.Repositories
             }
 
             await this.DeleteAsync(groupRemove);
-
         }
 
         public async Task<IEnumerable<Group>> GetAllAsync(int pageNumber, int rowCount)
@@ -88,7 +86,6 @@ namespace TodoListApp.Infrastructure.Data.Repositories
             {
                 throw new KeyNotFoundException($"Group with ID {entity.Id} not found.");
             }
-
         }
     }
 }

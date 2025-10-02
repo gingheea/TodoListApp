@@ -1,9 +1,9 @@
 namespace TodoListApp.Contracts.DTO
 {
-    public class TodoListDto
+    public class TodoListCreateDto
     {
-        public int Id { get; set; }
-
         public string Title { get; set; } = string.Empty;
+
+        public int? GroupId { get; set; } = null;
     }
 }

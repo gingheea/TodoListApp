@@ -13,6 +13,7 @@ namespace TodoListApp.Infrastructure.Data.Repositories
         {
             this.context = context;
         }
+
         public async Task AddAsync(TodoItem entity)
         {
             ArgumentNullException.ThrowIfNull(entity, nameof(entity));
@@ -77,7 +78,7 @@ namespace TodoListApp.Infrastructure.Data.Repositories
             }
             else
             {
-                throw new KeyNotFoundException($"Group with ID {entity.Id} not found.");
+                throw new KeyNotFoundException($"Todo Item with ID {entity.Id} not found.");
             }
         }
 
