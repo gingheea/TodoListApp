@@ -8,8 +8,6 @@ namespace TodoListApp.WebApi.Models.Models
 
         public int CreatedByUserId { get; set; }
 
-        private readonly List<TodoListModel> todoLists = new();
-
-        public IReadOnlyCollection<TodoListModel> TodoLists => this.todoLists.AsReadOnly();
+        public ICollection<TodoListModel> TodoLists { get; set; } = new List<TodoListModel>();
     }
 }

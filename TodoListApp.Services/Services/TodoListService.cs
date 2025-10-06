@@ -46,9 +46,9 @@ namespace TodoListApp.Services.Services
             await this.repository.DeleteByIdAsync(id);
         }
 
-        public async Task<IEnumerable<TodoListModel>> GetAllAsync(int userId, int pageNumber = 1, int rowCount = 10)
+        public async Task<IEnumerable<TodoListModel>> GetAllAsync(int userId, int? groupId, int pageNumber = 1, int rowCount = 10)
         {
-            var todoLists = await this.repository.GetAllAsync(pageNumber, rowCount, userId);
+            var todoLists = await this.repository.GetAllAsync(pageNumber, rowCount, userId, groupId);
             return this.mapper.Map<IEnumerable<TodoListModel>>(todoLists);
         }
 

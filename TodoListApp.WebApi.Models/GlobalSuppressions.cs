@@ -10,3 +10,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1000:Keywords should be spaced correctly", Justification = "<Ожидание>", Scope = "member", Target = "~F:TodoListApp.WebApi.Models.Models.GroupModel.todoLists")]
 [assembly: SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1201:Elements should appear in the correct order", Justification = "<Ожидание>", Scope = "member", Target = "~F:TodoListApp.WebApi.Models.Models.TodoListModel.items")]
 [assembly: SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1000:Keywords should be spaced correctly", Justification = "<Ожидание>", Scope = "member", Target = "~F:TodoListApp.WebApi.Models.Models.TodoListModel.items")]
+[assembly: SuppressMessage("Usage", "CA2227:Свойства коллекций должны быть доступны только для чтения", Justification = "<Ожидание>", Scope = "member", Target = "~P:TodoListApp.WebApi.Models.Models.GroupModel.TodoLists")]

@@ -4,5 +4,8 @@ namespace TodoListApp.Contracts.Interfaces
 
     public interface IGroupRepository : IRepository<Group>
     {
+        Task AddAsync(Group entity, int userId);
+
+        Task<IEnumerable<Group>> GetAllAsync(int pageNumber, int rowCount, int userId);
     }
 }

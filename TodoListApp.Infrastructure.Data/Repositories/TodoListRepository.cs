@@ -70,11 +70,19 @@ namespace TodoListApp.Infrastructure.Data.Repositories
                .ToListAsync();
         }
 
-        public async Task<IEnumerable<TodoList>> GetAllAsync(int pageNumber, int rowCount, int userId)
+        public async Task<IEnumerable<TodoList>> GetAllAsync(int pageNumber, int rowCount, int userId, int? groupId)
         {
-            return await this.context.UserTodoLists
+            var query = this.context.UserTodoLists
                 .Where(x => x.UserId == userId)
                 .Select(x => x.TodoList)
+                .AsQueryable();
+
+            if (groupId.HasValue)
+            {
+                query = query.Where(tl => tl.GroupId == groupId.Value);
+            }
+
+            return await query
                 .Skip((pageNumber - 1) * rowCount)
                 .Take(rowCount)
                 .ToListAsync();
@@ -89,7 +97,7 @@ namespace TodoListApp.Infrastructure.Data.Repositories
 
             return await this.context.TodoLists
                  .Include(tl => tl.TodoItems)
-                 .FirstOrDefaultAsync();
+                 .FirstOrDefaultAsync(g => g.Id == id);
         }
 
         public async Task UpdateAsync(TodoList entity)

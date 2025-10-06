@@ -16,12 +16,26 @@ namespace TodoListApp.Infrastructure.Data.Repositories
             this.context = context;
         }
 
-        public async Task AddAsync(Group entity)
+        public async Task AddAsync(Group entity, int userId)
         {
             ArgumentNullException.ThrowIfNull(entity, nameof(entity));
 
             _ = await this.context.Groups.AddAsync(entity);
             _ = await this.context.SaveChangesAsync();
+
+            var link = new UserGroup
+            {
+                UserId = userId,
+                GroupId = entity.Id,
+            };
+
+            _ = await this.context.UserGroups.AddAsync(link);
+            _ = await this.context.SaveChangesAsync();
+        }
+
+        public Task AddAsync(Group entity)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task DeleteAsync(Group entity)
@@ -57,6 +71,16 @@ namespace TodoListApp.Infrastructure.Data.Repositories
                .ToListAsync();
         }
 
+        public async Task<IEnumerable<Group>> GetAllAsync(int pageNumber, int rowCount, int userId)
+        {
+            return await this.context.UserGroups
+                .Where(x => x.UserId == userId)
+                .Select(x => x.Group)
+                .Skip((pageNumber - 1) * rowCount)
+                .Take(rowCount)
+                .ToListAsync();
+        }
+
         public async Task<Group?> GetByIdAsync(int id)
         {
             if (id < 0)
@@ -67,7 +91,7 @@ namespace TodoListApp.Infrastructure.Data.Repositories
             return await this.context.Groups
                 .Include(g => g.TodoLists)
                 .ThenInclude(tl => tl.TodoItems)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(g => g.Id == id);
         }
 
         public async Task UpdateAsync(Group entity)

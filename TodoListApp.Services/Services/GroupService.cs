@@ -16,7 +16,7 @@ namespace TodoListApp.Services.Services
             this.mapper = mapper;
         }
 
-        public async Task Add(GroupModel item)
+        public async Task Add(GroupModel item, int userId)
         {
             ArgumentNullException.ThrowIfNull(item);
 
@@ -27,7 +27,12 @@ namespace TodoListApp.Services.Services
 
             var entity = this.mapper.Map<Group>(item);
 
-            await this.repository.AddAsync(entity);
+            await this.repository.AddAsync(entity, userId);
+        }
+
+        public Task Add(GroupModel item)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task Delete(int id)
@@ -38,6 +43,12 @@ namespace TodoListApp.Services.Services
             }
 
             await this.repository.DeleteByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<GroupModel>> GetAllAsync(int userId, int pageNumber = 1, int rowCount = 10)
+        {
+            var groups = await this.repository.GetAllAsync(pageNumber, rowCount, userId);
+            return this.mapper.Map<IEnumerable<GroupModel>>(groups);
         }
 
         public async Task<IEnumerable<GroupModel>> GetAllAsync(int pageNumber = 1, int rowCount = 10)

@@ -10,8 +10,8 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
     using TodoListApp.WebApi.Models.Models;
 
     [Area("Home")]
-    [Route("api/[area]/group/{groupId?}/todolist")]
     [Route("api/[area]/todolist")]
+    [Route("api/[area]/group/{groupId}/todolist")]
     [ApiController]
 #pragma warning disable CA1848
     public class TodoListController : ControllerBase
@@ -46,16 +46,15 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllForUser(int page = 1, int size = 10)
+        public async Task<IActionResult> GetAllForUser([FromQuery] int? groupId, int page = 1, int size = 10)
         {
-            var userIdClaim = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
-                this._logger.LogWarning("Update: Invalid or missing userId claim");
                 return this.Unauthorized("Invalid UserId");
             }
 
-            var lists = await this._todoListService.GetAllAsync(userId, page, size);
+            var lists = await this._todoListService.GetAllAsync(userId, groupId, page, size);
             return this.Ok(this._mapper.Map<IEnumerable<TodoListDto>>(lists));
         }
 
@@ -82,7 +81,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create([FromRoute] int? groupId, [FromBody] TodoListCreateDto todoListCreateForm)
+        public async Task<IActionResult> Create([FromQuery] int? groupId, [FromBody] TodoListCreateDto todoListCreateForm)
         {
             this._logger.LogInformation("Create todo list request received");
 

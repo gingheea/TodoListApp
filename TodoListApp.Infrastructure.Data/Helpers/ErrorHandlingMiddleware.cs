@@ -1,10 +1,10 @@
-using Microsoft.Extensions.Logging;
-using System.Net;
-using System.Text.Json;
-using Microsoft.AspNetCore.Http;
-
 namespace TodoListApp.Infrastructure.Data.Helpers
 {
+    using System.Net;
+    using System.Text.Json;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
+
     public class ErrorHandlingMiddleware
     {
         private readonly RequestDelegate _next;

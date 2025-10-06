@@ -18,6 +18,8 @@ namespace TodoListApp.Infrastructure.Data.Database
 
         public DbSet<UserTodoList> UserTodoLists { get; set; }
 
+        public DbSet<UserGroup> UserGroups { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -27,10 +29,19 @@ namespace TodoListApp.Infrastructure.Data.Database
             _ = modelBuilder.Entity<UserTodoList>()
                 .HasKey(utl => new { utl.UserId, utl.TodoListId });
 
+            _ = modelBuilder.Entity<UserGroup>()
+                .HasKey(utl => new { utl.UserId, utl.GroupId });
+
             _ = modelBuilder.Entity<UserTodoList>()
                 .HasOne(utl => utl.TodoList)
                 .WithMany(tl => tl.UserTodoLists)
                 .HasForeignKey(utl => utl.TodoListId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            _ = modelBuilder.Entity<UserGroup>()
+                .HasOne(ug => ug.Group)
+                .WithMany(g => g.UserGroups)
+                .HasForeignKey(ug => ug.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             _ = modelBuilder.Entity<TodoList>()

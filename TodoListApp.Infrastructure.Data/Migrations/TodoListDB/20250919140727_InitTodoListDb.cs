@@ -1,10 +1,10 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
-
 #nullable disable
 
 namespace TodoListApp.Infrastructure.Data.Migrations.TodoListDB
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class InitTodoListDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

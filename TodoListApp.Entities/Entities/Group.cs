@@ -19,5 +19,8 @@ namespace TodoListApp.Entities.Entities
         public int CreatedByUserId { get; set; }
 
         public ICollection<TodoList> TodoLists { get; set; } = new List<TodoList>();
+
+        // Many-to-Many
+        public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
     }
 }

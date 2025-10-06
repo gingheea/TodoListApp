@@ -11,3 +11,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0065:Неправильно расположенная директива using", Justification = "<Ожидание>", Scope = "namespace", Target = "~N:TodoListApp.Infrastructure.Data.Migrations.TodoListDB")]
 [assembly: SuppressMessage("Style", "IDE0065:Неправильно расположенная директива using", Justification = "<Ожидание>", Scope = "namespace", Target = "~N:TodoListApp.Infrastructure.Data.Repositories")]
 [assembly: SuppressMessage("Design", "CA1031:Не перехватывать исключения общих типов", Justification = "<Ожидание>", Scope = "member", Target = "~M:TodoListApp.Infrastructure.Data.Helpers.ErrorHandlingMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)~System.Threading.Tasks.Task")]
+[assembly: SuppressMessage("Style", "IDE0065:Неправильно расположенная директива using", Justification = "<Ожидание>", Scope = "namespace", Target = "~N:TodoListApp.Infrastructure.Data.Migrations.UsersDB")]

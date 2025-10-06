@@ -1,10 +1,10 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
-
 #nullable disable
 
 namespace TodoListApp.Infrastructure.Data.Migrations.UsersDB
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class InitUsersDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

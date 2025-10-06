@@ -6,7 +6,7 @@ namespace TodoListApp.Contracts.Interfaces
     {
         Task AddAsync(TodoList entity, int userId);
 
-        Task<IEnumerable<TodoList>> GetAllAsync(int pageNumber, int rowCount, int userId);
+        Task<IEnumerable<TodoList>> GetAllAsync(int pageNumber, int rowCount, int userId, int? groupId);
 
         Task<TodoListRole?> GetUserRoleInListAsync(int userId, int listId);
     }

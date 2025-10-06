@@ -27,7 +27,8 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
             this._logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int rowCount = 10)
         {
             this._logger.LogInformation("GetAll groups requested (page={Page}, rowCount={RowCount})", pageNumber, rowCount);
@@ -40,7 +41,23 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
             return this.Ok(dto);
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetAllForUser(int page = 1, int size = 10)
+        {
+            var userIdClaim = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                this._logger.LogWarning("Update: Invalid or missing userId claim");
+                return this.Unauthorized("Invalid UserId");
+            }
+
+            var groups = await this._groupService.GetAllAsync(userId, page, size);
+            return this.Ok(this._mapper.Map<IEnumerable<GroupDto>>(groups));
+        }
+
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             this._logger.LogInformation("GetById called for group id={Id}", id);
@@ -92,7 +109,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
 
             this._logger.LogInformation("Creating group (name={Name}) by userId={UserId}", groupModel.Name, groupModel.CreatedByUserId);
 
-            await this._groupService.Add(groupModel);
+            await this._groupService.Add(groupModel, userId);
 
             this._logger.LogInformation("Group created with id={Id}", groupModel.Id);
 
@@ -100,6 +117,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] GroupUpdateDto groupUpdateForm)
         {
             this._logger.LogInformation("Update group request received for id={Id}", id);
@@ -129,6 +147,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             this._logger.LogInformation("Delete group request received for id={Id}", id);
