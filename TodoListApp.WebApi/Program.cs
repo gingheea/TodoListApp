@@ -12,15 +12,14 @@ using TodoListApp.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Add UsersDbContext
+// ------------------ 🧩 DATABASES ------------------
 builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("UsersDb")));
 
 builder.Services.AddDbContext<TodoListDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TodoListDb")));
 
-// Add Identity
+// ------------------ 🧩 IDENTITY & AUTH ------------------
 builder.Services.AddIdentity<User, IdentityRole<int>>()
     .AddEntityFrameworkStores<UsersDbContext>()
     .AddDefaultTokenProviders();
@@ -34,7 +33,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.RequireHttpsMetadata = true;
     options.SaveToken = true;
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -43,10 +42,11 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
 
+// ------------------ 🧩 SERVICES ------------------
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
@@ -59,6 +59,8 @@ builder.Services.AddScoped<TodoListService>();
 builder.Services.AddScoped<TodoItemService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddControllers();
+
+// ------------------ 🧩 SWAGGER ------------------
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -75,7 +77,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Введи 'Bearer {токен}' (без лапок). Приклад: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        Description = "Введи 'Bearer {токен}' (без лапок).",
     });
 
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
@@ -94,8 +96,23 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// ------------------ 🧩 CORS ------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorClient", policy =>
+    {
+        _ = policy.WithOrigins(
+                "https://localhost:5087",
+                "http://localhost:5087"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
+// ------------------ 🧩 MIDDLEWARE ------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -104,13 +121,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseCors("AllowBlazorClient");
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
+// ------------------ 🧩 SEED DATA ------------------
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
