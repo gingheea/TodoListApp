@@ -44,6 +44,13 @@ body {
     text-decoration: underline;
 }
 
+.dashboard-link-login {
+    color: var(--color-on-surface);
+    font-size: var(--font-size-sm);
+    transition: opacity var(--animation-duration-fast) var(--animation-curve-primary);
+    text-decoration: underline;
+}
+
 .dashboard-progress-fill {
     width: 42%;
 }

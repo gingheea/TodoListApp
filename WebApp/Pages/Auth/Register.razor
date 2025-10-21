@@ -1,0 +1,134 @@
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Forms
+@using TodoListApp.WebApp.Interfaces
+@using TodoListApp.WebApp.Model
+@using TodoListApp.WebApp.src.Components
+@page "/signup"
+@inject IAuthService AuthService
+@inject NavigationManager NavManager
+@inject ILocalStorageService LocalStorage
+
+<main class="page-wrapper"> 
+<section id="login-section" class="login-section h-screen overflow-hidden flex items-center justify-center bg-gray-50">
+    <div class="register-container">
+        <div class="dashboard-preview">
+            <img alt="TaskVista dashboard preview"
+                 src="https://images.pexels.com/photos/4065894/pexels-photo-4065894.jpeg?auto=compress&amp;cs=tinysrgb&amp;h=650&amp;w=940"
+                 class="preview-image" />
+        </div>
+
+        <div class="login-card">
+            <div class="login-header">
+                <h1 class="login-title">Create your account</h1>
+                <p class="login-subtitle">Join us and start your journey today.</p>
+            </div>
+
+            <EditForm Model="@registerModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+
+                <div class="register-form">
+                    <div class="form-group mb-3">
+                        <label for="register-email" class="form-label">Email</label>
+                        <InputText id="register-email" @bind-Value="registerModel.Email"
+                                   placeholder="riley@example.com"
+                                   class="form-input my-2" />
+                        <ValidationMessage For="@(() => registerModel.Email)" class="text-red-500 text-sm" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="register-username" class="form-label">Username</label>
+                        <InputText id="register-username" @bind-Value="registerModel.Nickname"
+                                   placeholder="john"
+                                   class="form-input my-2" />
+                        <ValidationMessage For="@(() => registerModel.Nickname)" class="text-red-500 text-sm" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="register-password" class="form-label">Password</label>
+                        <InputText id="register-password" @bind-Value="registerModel.Password"
+                                   placeholder="••••••••" type="password"
+                                   class="form-input my-2" />
+                        <ValidationMessage For="@(() => registerModel.Password)" class="text-red-500 text-sm" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="register-confirm-password" class="form-label">Confirm password</label>
+                        <InputText id="register-confirm-password" @bind-Value="registerModel.ConfirmPassword"
+                                   placeholder="••••••••" type="password"
+                                   class="form-input my-2" />
+                        <ValidationMessage For="@(() => registerModel.ConfirmPassword)" class="text-red-500 text-sm" />
+                    </div>
+
+                    <button type="submit" class="btn-signin btn btn-primary">Sign up</button>
+                </div>
+            </EditForm>
+
+            <div class="login-footer">
+                <p class="signup-text">
+                    Already have an account?
+                    <a href="/login">
+                        <div class="dashboard-link-login">
+                            <span>Log in</span>
+                        </div>
+                    </a>
+                </p>
+
+                <p class="security-note">
+                    Join us — simple, secure, and fast access to your tasks anywhere.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+ <Footer />
+</main>
+@code {
+    private RegisterModel registerModel = new();
+    private string? registerError;
+    private bool emailInvalid = false;
+    private bool usernameInvalid = false;
+    private bool passwordInvalid = false;
+    private bool confirmPasswordInvalid = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await LocalStorage.GetItemAsStringAsync("authToken");
+        if (!string.IsNullOrEmpty(token))
+        {
+            NavManager.NavigateTo("/dashboard", true);
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        registerError = null;
+        emailInvalid = false;
+        usernameInvalid = false;
+        passwordInvalid = false;
+        confirmPasswordInvalid = false;
+
+        var (success, err) = await AuthService.RegisterAsync(registerModel.Email, registerModel.Nickname, registerModel.Password, registerModel.ConfirmPassword);
+
+        if (success)
+        {
+            NavManager.NavigateTo("/");
+        }
+        else
+        {
+            registerError = ParseError(err);
+        }
+    }
+
+    private string ParseError(string? err)
+    {
+        if (string.IsNullOrWhiteSpace(err)) return "Login failed";
+
+        return err switch
+        {
+            string s when s.Contains("User not found", StringComparison.OrdinalIgnoreCase) => "User not found.",
+            string s when s.Contains("Token not received", StringComparison.OrdinalIgnoreCase) => "Unexpected server error.",
+            _ => err
+        };
+    }
+}

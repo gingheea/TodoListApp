@@ -1,15 +1,15 @@
-namespace TodoListApp.Contracts.DTO
-{
-    using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-    public class RegisterDto
+namespace TodoListApp.WebApp.Model
+{
+    public class RegisterModel
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Nickname is required")]
-        [StringLength(12, ErrorMessage = "Nickname cannot be longer than 12 characters.")]
+        [StringLength(12, MinimumLength = 3, ErrorMessage = "Nickname must be between 3 and 12 characters")]
         public string Nickname { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required")]
@@ -17,5 +17,9 @@ namespace TodoListApp.Contracts.DTO
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$",
             ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")]
         public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Confirm password is required")]
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 }

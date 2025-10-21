@@ -1,0 +1,35 @@
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using TodoListApp.WebApp.Interfaces
+@using TodoListApp.WebApp.Service
+@inject NavigationManager NavManager
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IAuthService AuthService
+
+<nav class="navigation">
+    <div class="navigation__container">
+        <a href="/" class="navigation__logo">
+            <span class="navigation__logo-text">Focusly</span>
+        </a>
+
+        <button class="btn-sm btn navigation__btn btn-outline" @onclick="Logout">
+            Logout
+        </button>
+    </div>
+</nav>
+
+@code {
+    private async Task Logout()
+    {
+        await LocalStorage.RemoveItemAsync("authToken");
+
+        if (AuthStateProvider is ApiAuthenticationStateProvider apiAuth)
+        {
+            apiAuth.NotifyUserLogout();
+        }
+        await AuthService.LogoutAsync();
+        NavManager.NavigateTo("/login", true);
+    }
+}
+

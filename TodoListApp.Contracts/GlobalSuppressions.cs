@@ -11,3 +11,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Usage", "CA2227:Свойства коллекций должны быть доступны только для чтения", Justification = "<Ожидание>", Scope = "member", Target = "~P:TodoListApp.Contracts.DTO.TodoListDetailDto.Items")]
 [assembly: SuppressMessage("Design", "CA1002:Не предоставляйте универсальные списки", Justification = "<Ожидание>", Scope = "member", Target = "~P:TodoListApp.Contracts.DTO.GroupDetailDto.TodoLists")]
 [assembly: SuppressMessage("Usage", "CA2227:Свойства коллекций должны быть доступны только для чтения", Justification = "<Ожидание>", Scope = "member", Target = "~P:TodoListApp.Contracts.DTO.GroupDetailDto.TodoLists")]
+[assembly: SuppressMessage("Style", "IDE0065:Неправильно расположенная директива using", Justification = "<Ожидание>", Scope = "namespace", Target = "~N:TodoListApp.Contracts.DTO")]

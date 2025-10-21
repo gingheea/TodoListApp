@@ -19,38 +19,65 @@ namespace TodoListApp.WebApp.Service
             this._authStateProvider = authStateProvider;
         }
 
-        public async Task<(bool Success, string? Error)> LoginAsync(string email, string password)
+        public async Task<(bool Success, string? Error)> LoginAsync(string emailOrUsername, string password)
         {
-            var response = await this._http.PostAsJsonAsync("api/auth/login", new { Email = email, Password = password });
-
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                var err = await response.Content.ReadAsStringAsync();
-                return (false, err);
+                var response = await this._http.PostAsJsonAsync("api/auth/login", new { EmailOrUsername = emailOrUsername, Password = password });
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        var json = JsonSerializer.Deserialize<JsonElement>(content);
+
+                        if (json.TryGetProperty("errors", out var errors))
+                        {
+                            var firstError = errors.EnumerateObject().First().Value[0].GetString();
+                            return (false, firstError);
+                        }
+
+                        if (json.TryGetProperty("message", out var msg))
+                        {
+                            return (false, msg.GetString());
+                        }
+                    }
+                    catch
+                    {
+                        return (false, content);
+                    }
+
+                    return (false, "Login failed");
+                }
+
+                var successJson = JsonSerializer.Deserialize<JsonElement>(content);
+                string? token = null;
+
+                if (successJson.TryGetProperty("token", out var tokenElement))
+                {
+                    token = tokenElement.GetString();
+                }
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    return (false, "Token not received from server");
+                }
+
+                await this._localStorage.SetItemAsync("authToken", token);
+                ((ApiAuthenticationStateProvider)this._authStateProvider).NotifyUserAuthentication(token);
+
+                return (true, null);
             }
-
-            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-
-            string? token = null;
-            if (json.TryGetProperty("token", out var tokenElement))
+            catch (Exception ex)
             {
-                token = tokenElement.GetString();
+                return (false, ex.Message);
             }
-
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                return (false, "Token not received from server");
-            }
-
-            await this._localStorage.SetItemAsync("authToken", token);
-            ((ApiAuthenticationStateProvider)this._authStateProvider).NotifyUserAuthentication(token);
-
-            return (true, null);
         }
 
         public async Task<(bool Success, string? Error)> RegisterAsync(string email, string nickname, string password)
         {
-            var response = await _http.PostAsJsonAsync("api/auth/signup", new
+            var response = await this._http.PostAsJsonAsync("api/auth/signup", new
             {
                 Email = email,
                 Nickname = nickname,
@@ -79,6 +106,69 @@ namespace TodoListApp.WebApp.Service
             ((ApiAuthenticationStateProvider)this._authStateProvider).NotifyUserAuthentication(token);
 
             return (true, null);
+        }
+
+        public async Task<(bool Success, string? Error)> RegisterAsync(string email, string nickname, string password, string confirmPassword)
+        {
+            try
+            {
+                var response = await this._http.PostAsJsonAsync("api/auth/signup", new
+                {
+                    Email = email,
+                    Nickname = nickname,
+                    Password = password,
+                    ConfirmPassword = confirmPassword
+                });
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        var json = JsonSerializer.Deserialize<JsonElement>(content);
+
+                        if (json.TryGetProperty("errors", out var errors))
+                        {
+                            var firstError = errors.EnumerateObject().First().Value[0].GetString();
+                            return (false, firstError);
+                        }
+
+                        if (json.TryGetProperty("message", out var msg))
+                        {
+                            return (false, msg.GetString());
+                        }
+                    }
+                    catch
+                    {
+                        return (false, content);
+                    }
+
+                    return (false, "Registration failed");
+                }
+
+                var successJson = JsonSerializer.Deserialize<JsonElement>(content);
+                string? token = null;
+
+                if (successJson.TryGetProperty("token", out var tokenElement))
+                {
+                    token = tokenElement.GetString();
+                }
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    return (false, "Token not received from server");
+                }
+
+                await this._localStorage.SetItemAsync("authToken", token);
+                ((ApiAuthenticationStateProvider)this._authStateProvider).NotifyUserAuthentication(token);
+
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
+            }
         }
 
         public async Task LogoutAsync()

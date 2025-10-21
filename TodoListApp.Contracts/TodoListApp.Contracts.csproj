@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TodoListApp.Entities\TodoListApp.Entities.csproj" />
+    <ProjectReference Include="..\TodoListApp.WebApi.Models\TodoListApp.WebApi.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -19,6 +19,7 @@ namespace TodoListApp.Infrastructure.Data.Repositories
             ArgumentNullException.ThrowIfNull(entity, nameof(entity));
 
             _ = await this.context.TodoItems.AddAsync(entity);
+            _ = await this.context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(TodoItem entity)

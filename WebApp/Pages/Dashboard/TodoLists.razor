@@ -1,0 +1,238 @@
+@page "/home/todolist"
+@using TodoListApp.WebApp.Model
+@using TodoListApp.WebApp.Service
+@using TodoListApp.WebApp.src.Components
+@inject TodoListService TodoListService
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+
+<main class="page-wrapper">
+    <section id="task-list" class="task-list-section  dashboard-overview">
+    <Navigation />
+    <div class="task-panel-wrapper">
+        <div class="main-task-column ">
+            <div class="task-header">
+                    <h2 class="section-title">My Lists</h2>
+                    <p class="section-subtitle">Organize your tasks by lists</p>
+            </div>
+
+                <div class="create-list-section">
+                    <div class="create-list-wrapper">
+                        <input type="text"
+                               @bind="newListTitle"
+                               placeholder="Enter new list title..."
+                               class="create-list-input"
+                               @ref="createListInputRef" />
+                        <button class="btn-create btn btn-primary" @onclick="CreateNewList">
+                            Create
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tasks-container">
+                    @if (lists == null)
+                    {
+                        <p>Loading your lists...</p>
+                    }
+                    else if (!lists.Any())
+                    {
+                        <div class="empty-state">
+                            <img src="images/empty-list.svg" alt="No lists" class="empty-image" />
+                            <h3>You have no lists yet</h3>
+                            <p>Create your first list to start organizing your tasks!</p>
+                            <button class="btn btn-primary" @onclick="FocusCreateListInput">Create a List</button>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var list in FilteredLists)
+                        {
+                            <div class="task-item">
+                                <button role="button" aria-label="Drag to reorder" class="drag-handle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24">
+                                        <path d="M4 5h16M4 12h16M4 19h16"
+                                              fill="none" stroke="currentColor" stroke-width="2"
+                                              stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                </button>
+
+                                <div class="task-content">
+                                    @if (editingListId == list.Id)
+                                    {
+                                        <input type="text"
+                                               class="edit-list-input"
+                                               @bind="editTitle"
+                                               @onblur="() => SaveListTitle(list)"
+                                               @onkeydown="@(e => HandleEditKey(e, list))"
+                                               autofocus />
+                                    }
+                                    else
+                                    {
+                                        <h3 class="task-title">@list.Title</h3>
+                                    }
+                                </div>
+
+                                <div class="task-controls">
+                                    <button aria-label="Edit title" class="task-action" @onclick="() => StartEditing(list)">
+                                        <svg width="18" height="18" viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-width="2"
+                                               stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
+                                            </g>
+                                        </svg>
+                                    </button>
+
+                                    <button aria-label="Delete list" class="task-action delete" @onclick="() => DeleteList(list.Id)">
+                                        <svg width="18" height="18" viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-width="2"
+                                               stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m5 0V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2"></path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </g>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+
+                    }
+                </div>
+        </div>
+
+        <div class="side-column">
+
+            <div class="filter-card">
+                <h3 class="card-heading">Filter</h3>
+                <div class="filter-options">
+                        <button class="filter-option @(currentFilter == "All" ? "active" : "")"
+                                @onclick="@(() => SetFilter("All"))">
+                            All
+                        </button>
+
+                        <button class="filter-option @(currentFilter == "Recent" ? "active" : "")"
+                                @onclick="@(() => SetFilter("Recent"))">
+                            Recent
+                        </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+    <Footer />
+</main>
+
+@code {
+    private List<TodoListModel>? lists;
+    private string currentFilter = "All";
+    private string newListTitle = string.Empty;
+
+    private int? editingListId = null;
+    private string editTitle = string.Empty;
+
+    private ElementReference createListInputRef;
+
+    private IEnumerable<TodoListModel> FilteredLists => currentFilter switch
+    {
+        "Recent" => lists?.OrderByDescending(l => l.Id).Take(5) ?? Enumerable.Empty<TodoListModel>(),
+        _ => lists ?? Enumerable.Empty<TodoListModel>()
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        lists = await TodoListService.GetUserListsAsync();
+    }
+
+    private void SetFilter(string filter)
+    {
+        currentFilter = filter;
+    }
+
+    private void OpenList(int listId)
+    {
+        NavManager.NavigateTo($"/home/{listId}/tasks");
+    }
+
+
+    private async Task CreateNewList()
+    {
+        if (string.IsNullOrWhiteSpace(newListTitle))
+        {
+            return;
+        }
+        var success = await TodoListService.CreateListAsync(new TodoListCreateModel
+            {
+                Title = newListTitle
+            });
+
+        if (success)
+        {
+            newListTitle = string.Empty;
+
+            lists = await TodoListService.GetUserListsAsync();
+        }
+        else
+        {
+            Console.WriteLine("❌ Failed to create list");
+        }
+    }
+
+    private void StartEditing(TodoListModel list)
+    {
+        editingListId = list.Id;
+        editTitle = list.Title;
+    }
+
+    private async Task SaveListTitle(TodoListModel list)
+    {
+        if (string.IsNullOrWhiteSpace(editTitle))
+        {
+            editingListId = null;
+            return;
+        }
+
+        list.Title = editTitle;
+        editingListId = null;
+
+        await TodoListService.UpdateListTitleAsync(list.Id, editTitle);
+    }
+
+    private async Task HandleEditKey(KeyboardEventArgs e, TodoListModel list)
+    {
+        if (e.Key == "Enter")
+        {
+            await SaveListTitle(list);
+        }
+        else if (e.Key == "Escape")
+        {
+            editingListId = null;
+        }
+    }
+
+    private async Task DeleteList(int listId)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete this list?");
+        if (!confirmed)
+        {
+            return;
+        }
+        var success = await TodoListService.DeleteListAsync(listId);
+        if (success)
+        {
+            lists = await TodoListService.GetUserListsAsync();
+        }
+        else
+        {
+            Console.WriteLine("❌ Failed to delete list");
+        }
+    }
+
+    private async Task FocusCreateListInput()
+    {
+        await Task.Delay(100);
+        await createListInputRef.FocusAsync();
+    }
+}

@@ -4,6 +4,7 @@ namespace TodoListApp.Services.Services
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
     using TodoListApp.Contracts.DTO;
     using TodoListApp.Contracts.Interfaces;
     using TodoListApp.Entities.Entities;
@@ -36,7 +37,16 @@ namespace TodoListApp.Services.Services
 
         public async Task<(bool Success, object Response)> LoginAsync(LoginDto form)
         {
-            var user = await this._userManager.FindByEmailAsync(form.Email);
+            User? user;
+            if (form.EmailOrUsername.Contains('@'))
+            {
+                user = await this._userManager.FindByEmailAsync(form.EmailOrUsername);
+            }
+            else
+            {
+                user = await this._userManager.Users.FirstOrDefaultAsync(u => u.UserName == form.EmailOrUsername);
+            }
+
             if (user == null)
             {
                 return (false, new { message = "User not found" });
@@ -47,6 +57,8 @@ namespace TodoListApp.Services.Services
             {
                 return (false, new { message = "Invalid password" });
             }
+
+
 
             string token = await this._tokenService.CreateToken(user);
             return (true, new { token, message = "Successful login" });
@@ -80,10 +92,16 @@ namespace TodoListApp.Services.Services
 
         public async Task<(bool Success, object Response)> SignupAsync(RegisterDto form)
         {
-            var existingUser = await this._userManager.FindByEmailAsync(form.Email);
-            if (existingUser != null)
+            var existingUserEmail = await this._userManager.FindByEmailAsync(form.Email);
+            if (existingUserEmail != null)
             {
                 return (false, new { message = "A user with this email already exists" });
+            }
+
+            var existingUserUsername = await this._userManager.FindByNameAsync(form.Nickname);
+            if (existingUserUsername != null)
+            {
+                return (false, new { message = "A user with this nickname already exists" });
             }
 
             var user = new User

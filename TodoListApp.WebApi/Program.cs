@@ -53,10 +53,12 @@ builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITodoListRepository, TodoListRepository>();
 builder.Services.AddScoped<ITodoItemRepository, TodoItemRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TodoListService>();
 builder.Services.AddScoped<TodoItemService>();
+builder.Services.AddScoped<TaskService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddControllers();
 
