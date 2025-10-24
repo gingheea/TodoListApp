@@ -1678,7 +1678,7 @@
 .progress-card {
     gap: var(--spacing-md);
     display: flex;
-    padding: var(--spacing-lg);
+    padding: 1.15rem;
     background: var(--color-surface-elevated);
     border-radius: var(--border-radius-lg);
     flex-direction: column;
@@ -1706,6 +1706,28 @@
     font-weight: var(--font-weight-medium);
     border-radius: var(--border-radius-md);
 }
+
+.task-item.completed {
+    background-color: #e8f9ed;
+    transition: background-color 0.3s ease;
+}
+
+.task-title.completed-title {
+    text-decoration: line-through;
+    color: #6b7280;
+}
+
+.task-status.completed-status {
+    color: #2f855a;
+    font-weight: 600;
+}
+
+
+    .task-tab.active {
+        color: #2b6cb0;
+        border-bottom: 2px solid #2b6cb0;
+    }
+
 
 .task-item {
     gap: var(--spacing-md);

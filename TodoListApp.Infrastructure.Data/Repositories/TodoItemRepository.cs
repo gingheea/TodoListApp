@@ -90,5 +90,26 @@ namespace TodoListApp.Infrastructure.Data.Repositories
 
             return userList?.Role;
         }
+
+        public async Task<IEnumerable<TodoItem>> GetAllAsync(int pageNumber, int rowCount, int listId)
+        {
+            return await this.context.TodoItems
+               .Where(ti => ti.TodoListId == listId)
+               .Skip((pageNumber - 1) * rowCount)
+               .Take(rowCount)
+               .ToListAsync();
+        }
+
+        public async Task ToggleCompleteAsync(int taskId, bool isCompleted)
+        {
+            var todoItem = await this.context.TodoItems.FindAsync(taskId);
+            if (todoItem == null)
+            {
+                throw new KeyNotFoundException($"Todo Item with ID {taskId} not found.");
+            }
+
+            todoItem.IsCompleted = isCompleted;
+            _ = await this.context.SaveChangesAsync();
+        }
     }
 }

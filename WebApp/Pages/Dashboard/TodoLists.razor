@@ -1,10 +1,12 @@
 @page "/home/todolist"
 @using TodoListApp.WebApp.Model
 @using TodoListApp.WebApp.Service
+@using Blazored.LocalStorage
 @using TodoListApp.WebApp.src.Components
 @inject TodoListService TodoListService
 @inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
+@inject ILocalStorageService LocalStorage
 
 <main class="page-wrapper">
     <section id="task-list" class="task-list-section  dashboard-overview">
@@ -47,8 +49,8 @@
                     {
                         @foreach (var list in FilteredLists)
                         {
-                            <div class="task-item">
-                                <button role="button" aria-label="Drag to reorder" class="drag-handle">
+                            <div class="task-item" @onclick="@(() => OpenListById(list.Id))">
+                                <button role="button" aria-label="Drag to reorder" class="drag-handle" @onclick:stopPropagation="true">
                                     <svg width="20" height="20" viewBox="0 0 24 24">
                                         <path d="M4 5h16M4 12h16M4 19h16"
                                               fill="none" stroke="currentColor" stroke-width="2"
@@ -73,7 +75,7 @@
                                 </div>
 
                                 <div class="task-controls">
-                                    <button aria-label="Edit title" class="task-action" @onclick="() => StartEditing(list)">
+                                    <button aria-label="Edit title" class="task-action" @onclick="() => StartEditing(list)" @onclick:stopPropagation="true">
                                         <svg width="18" height="18" viewBox="0 0 24 24">
                                             <g fill="none" stroke="currentColor" stroke-width="2"
                                                stroke-linecap="round" stroke-linejoin="round">
@@ -83,7 +85,7 @@
                                         </svg>
                                     </button>
 
-                                    <button aria-label="Delete list" class="task-action delete" @onclick="() => DeleteList(list.Id)">
+                                    <button aria-label="Delete list" class="task-action delete" @onclick="() => DeleteList(list.Id)" @onclick:stopPropagation="true">
                                         <svg width="18" height="18" viewBox="0 0 24 24">
                                             <g fill="none" stroke="currentColor" stroke-width="2"
                                                stroke-linecap="round" stroke-linejoin="round">
@@ -143,6 +145,12 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var token = await LocalStorage.GetItemAsStringAsync("authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            NavManager.NavigateTo("/login", true);
+        }
+
         lists = await TodoListService.GetUserListsAsync();
     }
 
@@ -151,9 +159,9 @@
         currentFilter = filter;
     }
 
-    private void OpenList(int listId)
+    private void OpenListById(int listId)
     {
-        NavManager.NavigateTo($"/home/{listId}/tasks");
+        NavManager.NavigateTo($"/home/todolist/{listId}/tasks");
     }
 
 

@@ -20,6 +20,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<TodoListService>();
+builder.Services.AddScoped<TodoItemService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddTransient<AuthMessageHandler>();

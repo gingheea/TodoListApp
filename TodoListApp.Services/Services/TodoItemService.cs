@@ -52,6 +52,12 @@ namespace TodoListApp.Services.Services
             return this.mapper.Map<IEnumerable<TodoItemModel>>(todoItems);
         }
 
+        public async Task<IEnumerable<TodoItemModel>> GetAllAsync(int listId, int pageNumber = 1, int rowCount = 10)
+        {
+            var todoItems = await this.repository.GetAllAsync(pageNumber, rowCount, listId);
+            return this.mapper.Map<IEnumerable<TodoItemModel>>(todoItems);
+        }
+
         public async Task<TodoItemModel> GetById(int id)
         {
             if (id <= 0)
@@ -83,6 +89,16 @@ namespace TodoListApp.Services.Services
             }
 
             return await this.repository.GetUserRoleInListAsync(userId, listId);
+        }
+
+        public async Task ToggleCompleteAsync(int taskId, bool isCompleted)
+        {
+            if (taskId <= 0)
+            {
+                throw new ArgumentException("Invalid task id");
+            }
+
+            await this.repository.ToggleCompleteAsync(taskId, isCompleted);
         }
     }
 }

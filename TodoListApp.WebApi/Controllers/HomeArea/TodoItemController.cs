@@ -9,8 +9,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
     using TodoListApp.WebApi.Models.Models;
 
     [Area("Home")]
-    [Route("api/[area]/todolist/{listId}/todoitems")]
-    [Route("api/[area]/todoitems")]
+    [Route("api/[area]/todolist/{listId:int}/todoitems")]
     [ApiController]
 #pragma warning disable CA1848
     public class TodoItemController : ControllerBase
@@ -29,8 +28,9 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
             this._logger = logger;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int rowCount = 10)
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllForAdmin([FromQuery] int pageNumber = 1, [FromQuery] int rowCount = 10)
         {
             this._logger.LogInformation("GetAll todo items requested (page={Page}, rowCount={RowCount})", pageNumber, rowCount);
 
@@ -42,7 +42,21 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
             return this.Ok(dto);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetAllForUser(int listId, [FromQuery] int page = 1, [FromQuery] int size = 10)
+        {
+            this._logger.LogInformation("GetAll todo items requested (page={Page}, rowCount={RowCount})", page, size);
+
+            var todoItems = await this._todoItemService.GetAllAsync(listId, page, size);
+            var dto = this._mapper.Map<IEnumerable<TodoItemDto>>(todoItems);
+
+            this._logger.LogInformation("Returned {Count} todo items for page {Page}", dto?.Count() ?? 0, page);
+
+            return this.Ok(dto);
+        }
+
+        [HttpGet("{id:int}")]
         [Authorize]
         public async Task<IActionResult> GetById(int listId, int id)
         {
@@ -112,7 +126,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
             return this.CreatedAtAction(nameof(this.GetById), new { listId, id = todoItemModel.Id }, this._mapper.Map<TodoItemDto>(todoItemModel));
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         [Authorize]
         public async Task<IActionResult> Update(int listId, int id, [FromBody] TodoItemUpdateDto todoItemUpdateForm)
         {
@@ -150,7 +164,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
             return this.Ok(this._mapper.Map<TodoItemDto>(todoItemModel));
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         [Authorize]
         public async Task<IActionResult> Delete(int listId, int id)
         {
@@ -183,6 +197,42 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
             return this.NoContent();
         }
 
+        [HttpPut("{id}/status")]
+        [Authorize]
+        public async Task<IActionResult> ChangeStatus(int listId, int id, [FromBody] ChangeStatusDto dto)
+        {
+            this._logger.LogInformation("ChangeStatus called for todoItem id={Id} in listId={ListId}", id, listId);
+            if (id <= 0 || listId <= 0)
+            {
+                return this.BadRequest("Invalid id or listId");
+            }
+
+            var todoItem = await this._todoItemService.GetById(id);
+            if (todoItem == null || todoItem.TodoListId != listId)
+            {
+                return this.NotFound();
+            }
+
+            var userIdClaim = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                this._logger.LogWarning("Delete: Invalid or missing userId claim");
+                return this.Unauthorized("Invalid UserId");
+            }
+
+            var role = await this._todoItemService.GetUserRoleInListAsync(userId, listId);
+            if (role is not TodoListRole.Owner and not TodoListRole.Editor)
+            {
+                this._logger.LogWarning("Delete: User {UserId} has no permission to delete items in list {ListId}", userId, listId);
+                return this.Forbid();
+            }
+
+            await this._todoItemService.ToggleCompleteAsync(id, dto.IsCompleted);
+
+            this._logger.LogInformation("Todo item with id={Id} status changed to IsCompleted={IsCompleted}", id, dto.IsCompleted);
+
+            return this.NoContent();
+        }
 #pragma warning restore CA1848
     }
 }
