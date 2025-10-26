@@ -1593,6 +1593,31 @@
     justify-content: flex-start;
 }
 
+.create-task-section {
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    background-color: #f9f9fb;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.btn-show-create {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #4c82f7;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .btn-show-create:hover {
+        background-color: #376ee0;
+    }
+
 .edit-list-input {
     width: 100%;
     font-size: 1.1rem;
@@ -1608,6 +1633,11 @@
         background-color: #f9fcff;
     }
 
+edit-task-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
 
 .task-action.delete svg {
     stroke: #e74c3c;
@@ -1621,7 +1651,6 @@
 
 .create-list-wrapper {
     display: flex;
-    align-items: center;
     gap: 0.8rem;
     width: 100%;
     max-width: 500px;
@@ -1710,6 +1739,19 @@
 .task-item.completed {
     background-color: #e8f9ed;
     transition: background-color 0.3s ease;
+    font-weight: 600;
+}
+
+.task-item.overdue-status {
+    background-color: #fde8e8;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+}
+
+.task-item.almost-due-status {
+    background-color: #fff4e5; 
+    transition: background-color 0.3s ease;
+    font-weight: 600;
 }
 
 .task-title.completed-title {
@@ -1717,10 +1759,6 @@
     color: #6b7280;
 }
 
-.task-status.completed-status {
-    color: #2f855a;
-    font-weight: 600;
-}
 
 
     .task-tab.active {

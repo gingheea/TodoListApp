@@ -3,6 +3,7 @@ namespace TodoListApp.WebApp.Service
 {
     using System.Collections.Generic;
     using System.Net.Http.Json;
+    using Microsoft.AspNetCore.Components;
     using TodoListApp.WebApp.Model;
 
     public class TodoItemService
@@ -27,15 +28,15 @@ namespace TodoListApp.WebApp.Service
             }
         }
 
-        public async Task<bool> CreateTaskAsync(int listId, string title)
+        public async Task<bool> CreateTaskAsync(int listId, TodoItemCreateModel newTask)
         {
-            var response = await this._http.PostAsJsonAsync($"api/todolist/{listId}/tasks", new { Title = title });
+            var response = await this._http.PostAsJsonAsync($"api/home/todolist/{listId}/todoitems", newTask);
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdateTaskTitleAsync(int taskId, string newTitle)
+        public async Task<bool> UpdateTaskAsync(int listId, int id, TodoItemUpdateModel updatedTask)
         {
-            var response = await this._http.PutAsJsonAsync($"api/todolist/task/{taskId}", new { Title = newTitle });
+            var response = await this._http.PutAsJsonAsync($"api/home/todolist/{listId}/todoitems/{id}", updatedTask);
             return response.IsSuccessStatusCode;
         }
 
