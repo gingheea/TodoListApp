@@ -49,7 +49,7 @@ namespace TodoListApp.Infrastructure.Data.Helpers
             var result = JsonSerializer.Serialize(new
             {
                 error = message,
-                status = (int)statusCode
+                status = (int)statusCode,
             });
 
             return response.WriteAsync(result);

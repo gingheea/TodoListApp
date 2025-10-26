@@ -5,6 +5,7 @@ namespace TodoListApp.Contracts.Interfaces
     public interface ITokenService
     {
         Task<string> CreateToken(User user);
+
         string? GetUserIdFromToken(string token);
     }
 }

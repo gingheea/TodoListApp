@@ -2,7 +2,6 @@ namespace TodoListApp.Contracts.Interfaces
 {
     public interface IRepository<TEntity>
     {
-
         Task<IEnumerable<TEntity>> GetAllAsync(int pageNumber, int rowCount);
 
         Task<TEntity?> GetByIdAsync(int id);

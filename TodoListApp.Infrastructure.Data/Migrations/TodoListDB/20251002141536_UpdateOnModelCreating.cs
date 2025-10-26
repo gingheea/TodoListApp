@@ -8,11 +8,11 @@ namespace TodoListApp.Infrastructure.Data.Migrations.TodoListDB
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
+            _ = migrationBuilder.DropForeignKey(
                 name: "FK_todo_list_group_group_id",
                 table: "todo_list");
 
-            migrationBuilder.AddForeignKey(
+            _ = migrationBuilder.AddForeignKey(
                 name: "FK_todo_list_group_group_id",
                 table: "todo_list",
                 column: "group_id",
@@ -23,11 +23,11 @@ namespace TodoListApp.Infrastructure.Data.Migrations.TodoListDB
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
+            _ = migrationBuilder.DropForeignKey(
                 name: "FK_todo_list_group_group_id",
                 table: "todo_list");
 
-            migrationBuilder.AddForeignKey(
+            _ = migrationBuilder.AddForeignKey(
                 name: "FK_todo_list_group_group_id",
                 table: "todo_list",
                 column: "group_id",

@@ -14,7 +14,8 @@ namespace TodoListApp.Contracts.DTO
 
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long")]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$",
+        [RegularExpression(
+            @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$",
             ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")]
         public string Password { get; set; } = string.Empty;
     }

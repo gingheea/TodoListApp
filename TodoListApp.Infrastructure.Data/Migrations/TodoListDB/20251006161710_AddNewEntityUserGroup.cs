@@ -8,17 +8,17 @@ namespace TodoListApp.Infrastructure.Data.Migrations.TodoListDB
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "user_groups",
                 columns: table => new
                 {
                     user_id = table.Column<int>(type: "int", nullable: false),
-                    group_id = table.Column<int>(type: "int", nullable: false)
+                    group_id = table.Column<int>(type: "int", nullable: false),
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user_groups", x => new { x.user_id, x.group_id });
-                    table.ForeignKey(
+                    _ = table.PrimaryKey("PK_user_groups", x => new { x.user_id, x.group_id });
+                    _ = table.ForeignKey(
                         name: "FK_user_groups_group_group_id",
                         column: x => x.group_id,
                         principalTable: "group",
@@ -26,7 +26,7 @@ namespace TodoListApp.Infrastructure.Data.Migrations.TodoListDB
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_user_groups_group_id",
                 table: "user_groups",
                 column: "group_id");
@@ -34,7 +34,7 @@ namespace TodoListApp.Infrastructure.Data.Migrations.TodoListDB
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "user_groups");
         }
     }
