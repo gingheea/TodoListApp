@@ -65,6 +65,11 @@
 
                     <button type="submit" class="btn-signin btn btn-primary">Sign up</button>
                 </div>
+
+                    @if (!string.IsNullOrEmpty(registerError))
+                    {
+                        <p class="text-red-500 text-sm mt-1">@registerError</p>
+                    }
             </EditForm>
 
             <div class="login-footer">
@@ -87,7 +92,7 @@
  <Footer />
 </main>
 @code {
-    private RegisterModel registerModel = new();
+    private readonly RegisterModel registerModel = new RegisterModel();
     private string? registerError;
 
 

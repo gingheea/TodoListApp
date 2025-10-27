@@ -31,7 +31,7 @@
                     <div class="create-task-section">
                         <div class="create-list-wrapper">
                             <input type="text" class="create-list-input" placeholder="Task title..."
-                            @bind="newTaskTitle" />
+                            @bind="newTaskTitle" @ref="createTaskInputRef" />/>
 
                             <textarea class="create-list-input" placeholder="Description..."
                             @bind="newTaskDescription"></textarea>
@@ -83,9 +83,9 @@
                                             <input type="text" class="edit-list-input" @bind="editTitle" autofocus />
 
                                             <textarea class="edit-list-input"
-                                                      @bind="editDescription"
-                                                      @bind:event="oninput"
-                                                      placeholder="Description"></textarea>
+                                            @bind="editDescription"
+                                            @bind:event="oninput"
+                                            placeholder="Description"></textarea>
 
                                             <input type="date" class="edit-list-input" @bind="editDueDate" />
                                         </div>
@@ -158,7 +158,7 @@
                     </div>
                     <div class="progress-bar">
                         <div class="dashboard-progress-fill progress-fill"
-                             style="width:@($"{progressPercent}%")"></div>
+                        style="width:@($"{progressPercent}%")"></div>
                     </div>
                 </div>
 
@@ -291,7 +291,7 @@
         {
             return "Due soon";
         }
-        
+
 
         return "In progress";
     }
@@ -355,7 +355,7 @@
             task.Description = editDescription;
             task.DueDate = editDueDate;
 
-            editingTaskId = null;
+            CancelEditing();
             tasks = await TodoItemService.GetTasksByListIdAsync(listId);
 
             StateHasChanged();
@@ -378,7 +378,7 @@
         }  
         else if (e.Key == "Escape")
         {
-            editingTaskId = null;
+            CancelEditing();
         }
     }
 

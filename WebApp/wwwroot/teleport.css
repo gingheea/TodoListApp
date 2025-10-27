@@ -234,32 +234,6 @@
         background-color: var(--dl-color-theme-primary2);
     }
 
-.thq-heading-1 {
-    font-size: 48px;
-    font-family: STIX Two Text;
-    font-weight: 700;
-    line-height: 1.5;
-}
-
-.thq-heading-2 {
-    font-size: 35px;
-    font-family: STIX Two Text;
-    font-weight: 600;
-    line-height: 1.5;
-}
-
-.thq-heading-3 {
-    font-size: 26px;
-    font-family: STIX Two Text;
-    font-weight: 600;
-    line-height: 1.5;
-}
-
-.thq-body-large {
-    font-size: 18px;
-    font-family: Noto Sans;
-    line-height: 1.5;
-}
 
 .thq-team-image-round {
     width: 80px;
@@ -2571,22 +2545,6 @@ edit-task-block {
 .tip-icon svg {
     width: 24px;
     height: 24px;
-}
-
-.Content {
-    font-size: 16px;
-    font-family: Inter;
-    font-weight: 400;
-    line-height: 1.15;
-    text-transform: none;
-    text-decoration: none;
-}
-
-
-.Headings {
-    font-size: 2em;
-    font-family: Manrope;
-    font-weight: 700;
 }
 
 @media(max-width: 991px) {
