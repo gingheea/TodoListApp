@@ -1,3 +1,5 @@
+#pragma warning disable S4457
+#pragma warning disable S3236
 namespace TodoListApp.Infrastructure.Data.Repositories
 {
     using Microsoft.EntityFrameworkCore;

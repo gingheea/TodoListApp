@@ -26,7 +26,5 @@ namespace TodoListApp.Infrastructure.Data.Repositories
                     .Any(utl => utl.UserId == userId))
                 .ToListAsync();
         }
-
-
     }
 }

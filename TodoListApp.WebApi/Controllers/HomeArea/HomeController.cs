@@ -1,3 +1,4 @@
+#pragma warning disable SA1649
 namespace TodoListApp.WebApi.Controllers.HomeArea
 {
     using System.Security.Claims;

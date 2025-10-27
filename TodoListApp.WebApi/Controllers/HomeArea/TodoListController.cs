@@ -1,3 +1,4 @@
+#pragma warning disable SA1101
 namespace TodoListApp.WebApi.Controllers.HomeArea
 {
     using System.Collections.Generic;
@@ -48,7 +49,7 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
         [Authorize]
         public async Task<IActionResult> GetAllForUser([FromQuery] int? groupId, int page = 1, int size = 10)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
                 return this.Unauthorized("Invalid UserId");

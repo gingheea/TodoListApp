@@ -1,3 +1,6 @@
+#pragma warning disable CS8604
+#pragma warning disable CA1062
+#pragma warning disable CA1305
 namespace TodoListApp.Services.Services
 {
     using System;

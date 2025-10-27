@@ -1,3 +1,4 @@
+#pragma warning disable CS8604
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -42,7 +43,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
     };
 });
 
@@ -105,8 +106,7 @@ builder.Services.AddCors(options =>
     {
         _ = policy.WithOrigins(
                 "https://localhost:5087",
-                "http://localhost:5087"
-            )
+                "http://localhost:5087")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -117,8 +117,8 @@ var app = builder.Build();
 // ------------------ 🧩 MIDDLEWARE ------------------
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    _ = app.UseSwagger();
+    _ = app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

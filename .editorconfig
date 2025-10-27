@@ -288,15 +288,3 @@ dotnet_diagnostic.SA1618.severity = none      # GenericTypeParametersMustBeDocum
 dotnet_diagnostic.SA1625.severity = none      # ElementDocumentationMustNotBeCopiedAndPasted
 dotnet_diagnostic.SA1633.severity = none      # FileMustHaveHeader
 
-# ================================
-# Disable all Code Smell warnings
-# ================================
-
-# Вимикаємо всі діагностики типу "Sxxxx" (Sonar)
-dotnet_analyzer_diagnostic.S*.severity = none
-
-# Вимикаємо всі категорії CodeSmell, Maintainability, Style, Documentation
-dotnet_analyzer_diagnostic.category-CodeSmell.severity = none
-dotnet_analyzer_diagnostic.category-Maintainability.severity = none
-dotnet_analyzer_diagnostic.category-Style.severity = none
-dotnet_analyzer_diagnostic.category-Documentation.severity = none

@@ -1,3 +1,4 @@
+#pragma warning disable CA1062
 namespace TodoListApp.WebApi.Controllers.HomeArea
 {
     using System.Security.Claims;

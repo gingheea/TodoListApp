@@ -1,6 +1,7 @@
 namespace TodoListApp.Services.Services
 {
     using System;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Identity;
@@ -58,15 +59,13 @@ namespace TodoListApp.Services.Services
                 return (false, new { message = "Invalid password" });
             }
 
-
-
             string token = await this._tokenService.CreateToken(user);
             return (true, new { token, message = "Successful login" });
         }
 
         public async Task<(bool Success, object Response)> LogoutAsync(int userId)
         {
-            var user = await this._userManager.FindByIdAsync(userId.ToString());
+            var user = await this._userManager.FindByIdAsync(userId.ToString(CultureInfo.InvariantCulture));
             if (user == null)
             {
                 return (false, new { message = "User not found" });
@@ -80,7 +79,7 @@ namespace TodoListApp.Services.Services
 
         public async Task<(bool Success, object Response)> RefreshJwtToken(int userId)
         {
-            var user = await this._userManager.FindByIdAsync(userId.ToString());
+            var user = await this._userManager.FindByIdAsync(userId.ToString(CultureInfo.InvariantCulture));
             if (user == null)
             {
                 return (false, new { message = "User not found" });

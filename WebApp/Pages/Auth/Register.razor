@@ -1,3 +1,7 @@
+#pragma warning disable S2933
+#pragma warning disable S4487
+#pragma warning disable CS0414
+
 @using Blazored.LocalStorage
 @using Microsoft.AspNetCore.Components.Forms
 @using TodoListApp.WebApp.Interfaces
@@ -85,10 +89,6 @@
 @code {
     private RegisterModel registerModel = new();
     private string? registerError;
-    private bool emailInvalid = false;
-    private bool usernameInvalid = false;
-    private bool passwordInvalid = false;
-    private bool confirmPasswordInvalid = false;
 
 
     protected override async Task OnInitializedAsync()
@@ -103,10 +103,6 @@
     private async Task HandleLogin()
     {
         registerError = null;
-        emailInvalid = false;
-        usernameInvalid = false;
-        passwordInvalid = false;
-        confirmPasswordInvalid = false;
 
         var (success, err) = await AuthService.RegisterAsync(registerModel.Email, registerModel.Nickname, registerModel.Password, registerModel.ConfirmPassword);
 

@@ -1,3 +1,4 @@
+#pragma warning disable S4457
 namespace TodoListApp.Services.Services
 {
     using System.Collections.Generic;

@@ -261,12 +261,6 @@
     line-height: 1.5;
 }
 
-.thq-body-small {
-    font-size: 16px;
-    font-family: Noto Sans;
-    line-height: 1.5;
-}
-
 .thq-team-image-round {
     width: 80px;
     height: 80px;
@@ -2409,10 +2403,6 @@ edit-task-block {
     height: 20px;
 }
 
-.task-tab.active {
-    color: var(--color-on-surface);
-    background: var(--color-surface-elevated);
-}
 
 .task-tab:hover {
     background: var(--color-surface-elevated);
@@ -2592,11 +2582,6 @@ edit-task-block {
     text-decoration: none;
 }
 
-.BodyFont {
-    font-size: 1rem;
-    font-family: Open Sans;
-    font-weight: 400;
-}
 
 .Headings {
     font-size: 2em;
@@ -2611,6 +2596,7 @@ edit-task-block {
 
     .hero-title {
         font-size: var(--font-size-xl);
+        font-family: sans-serif;
     }
 
     .login-container {
