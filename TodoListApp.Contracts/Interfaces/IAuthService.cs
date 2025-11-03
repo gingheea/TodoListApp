@@ -10,7 +10,7 @@ namespace TodoListApp.Contracts.Interfaces
 
         Task<(bool Success, object Response)> LogoutAsync(int userId);
 
-        Task<(bool Success, object Response)> RefreshJwtToken(int userId);
+        Task<(bool Success, object Response)> RefreshTokensAsync(string refreshToken);
 
         object GetAllRoles();
     }

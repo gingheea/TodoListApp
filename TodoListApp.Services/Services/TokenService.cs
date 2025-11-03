@@ -27,19 +27,25 @@ namespace TodoListApp.Services.Services
             this._config = config;
         }
 
-        public async Task<string> CreateToken(User user)
+        public async Task<(string Token, DateTime ExpiresAtUtc)> CreateToken(User user)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(this._config["Jwt:Key"]);
+            if (!int.TryParse(this._config["Jwt:AccessTokenMinutes"], out int accessTokenMinutes) || accessTokenMinutes <= 0)
+            {
+                accessTokenMinutes = 120;
+            }
+
+            var expiresAtUtc = DateTime.UtcNow.AddMinutes(accessTokenMinutes);
 
             var claims = new List<Claim>
-        {
-            new Claim("Id", user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-            new Claim("Nickname", user.Nickname ?? string.Empty),
-        };
+            {
+             new Claim("Id", user.Id.ToString()),
+             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+             new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+             new Claim("Nickname", user.Nickname ?? string.Empty),
+            };
 
             var roles = await this._userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -50,7 +56,7 @@ namespace TodoListApp.Services.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = expiresAtUtc,
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature),
@@ -59,7 +65,12 @@ namespace TodoListApp.Services.Services
             };
 
             var token = jwtHandler.CreateToken(tokenDescriptor);
-            return jwtHandler.WriteToken(token);
+            return (jwtHandler.WriteToken(token), expiresAtUtc);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            throw new NotImplementedException();
         }
 
         public string? GetUserIdFromToken(string token)
@@ -72,6 +83,16 @@ namespace TodoListApp.Services.Services
 
             var jwt = handler.ReadJwtToken(token);
             return jwt.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+        }
+
+        public string HashRefreshToken(string refreshToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ValidateRefreshToken(string refreshToken, string tokenHash)
+        {
+            throw new NotImplementedException();
         }
     }
 }
