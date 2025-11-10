@@ -36,7 +36,7 @@
                     {
                         <p>Loading your lists...</p>
                     }
-                    else if (!lists.Any())
+                    else if (lists.Count == 0 && pageNumber == 1)
                     {
                         <div class="empty-state">
                             <img src="images/empty-list.svg" alt="No lists" class="empty-image" />
@@ -101,6 +101,18 @@
                         }
 
                     }
+
+                    <div class="pagination">
+                        <button class="btn" @onclick="PrevPage" disabled="@(pageNumber <= 1)">
+                            Previous
+                        </button>
+
+                        <span>Page @pageNumber</span>
+
+                        <button class="btn" @onclick="NextPage" disabled="@(lists == null || lists.Count < pageSize)">
+                            Next
+                        </button>
+                    </div>
                 </div>
         </div>
 
@@ -131,6 +143,8 @@
     private List<TodoListModel>? lists;
     private string currentFilter = "All";
     private string newListTitle = string.Empty;
+    private int pageNumber = 1;
+    private int pageSize = 5;
 
     private int? editingListId = null;
     private string editTitle = string.Empty;
@@ -152,6 +166,32 @@
         }
 
         lists = await TodoListService.GetUserListsAsync();
+    }
+
+    private async Task LoadLists()
+    {
+        lists = await TodoListService.GetUserListsAsync(pageNumber, pageSize);
+
+        if (lists != null && lists.Count == 0 && pageNumber > 1)
+        {
+            pageNumber--;
+            lists = await TodoListService.GetUserListsAsync(pageNumber, pageSize);
+        }
+    }
+
+    private async Task NextPage()
+    {
+        pageNumber++;
+        await LoadLists();
+    }
+
+    private async Task PrevPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await LoadLists();
+        }
     }
 
     private void SetFilter(string filter)
@@ -180,7 +220,7 @@
         {
             newListTitle = string.Empty;
 
-            lists = await TodoListService.GetUserListsAsync();
+            await LoadLists();
         }
         else
         {
@@ -230,7 +270,7 @@
         var success = await TodoListService.DeleteListAsync(listId);
         if (success)
         {
-            lists = await TodoListService.GetUserListsAsync();
+            await LoadLists();
         }
         else
         {

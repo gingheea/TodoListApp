@@ -12,11 +12,11 @@ namespace TodoListApp.WebApp.Service
             this._http = http;
         }
 
-        public async Task<List<TodoListModel>> GetUserListsAsync()
+        public async Task<List<TodoListModel>> GetUserListsAsync(int page = 1, int size = 5)
         {
             try
             {
-                var result = await this._http.GetFromJsonAsync<List<TodoListModel>>("api/home/todolist");
+                var result = await this._http.GetFromJsonAsync<List<TodoListModel>>($"api/home/todolist?page={page}&size={size}");
                 return result ?? new List<TodoListModel>();
             }
             catch (HttpRequestException ex)

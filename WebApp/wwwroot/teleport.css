@@ -1588,17 +1588,25 @@
 
 .edit-list-input {
     width: 100%;
-    font-size: 1.1rem;
-    padding: 0.3rem 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    font-size: 1rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #d0d0d0;
+    background: #fff;
     outline: none;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
+    /* Hover - легкий візуальний відгук */
+    .edit-list-input:hover {
+        border-color: #b3b3b3;
+    }
+
+    /* Focus - стиль під всю програму */
     .edit-list-input:focus {
-        border-color: #0078ff;
-        background-color: #f9fcff;
+        border-color: #4a90e2;
+        background-color: #f8fbff;
+        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.25);
     }
 
 edit-task-block {
@@ -1632,7 +1640,43 @@ edit-task-block {
     font-size: 1rem;
     outline: none;
     transition: border-color 0.2s ease;
+    text-align: start;
 }
+
+
+.search-input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    background-color: #fff;
+}
+
+    /* Placeholder по центру */
+    .search-input::placeholder {
+        text-align: center;
+        color: #888;
+    }
+
+    /* Коли користувач починає вводити, вирівнюємо зліва */
+    .search-input:not(:placeholder-shown) {
+        text-align: left;
+    }
+
+    /* Ховер */
+    .search-input:hover {
+        border-color: #999;
+    }
+
+    /* Фокус */
+    .search-input:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.25);
+    }
 
     .create-list-input:focus {
         border-color: #0078ff;

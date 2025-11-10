@@ -15,11 +15,12 @@ namespace TodoListApp.WebApp.Service
             this._http = http;
         }
 
-        public async Task<List<TodoItemModel>?> GetTasksByListIdAsync(int listId)
+        public async Task<List<TodoItemModel>?> GetTasksByListIdAsync(int listId, int page = 1, int size = 10)
         {
             try
             {
-                return await this._http.GetFromJsonAsync<List<TodoItemModel>>($"api/home/todolist/{listId}/todoitems");
+                return await this._http.GetFromJsonAsync<List<TodoItemModel>>(
+                    $"api/home/todolist/{listId}/todoitems?page={page}&size={size}");
             }
             catch (Exception ex)
             {
