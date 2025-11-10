@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TodoListApp.Contracts\TodoListApp.Contracts.csproj" />
-    <ProjectReference Include="..\TodoListApp.Infrastructure.Data\TodoListApp.Infrastructure.Data.csproj" />
     <ProjectReference Include="..\TodoListApp.WebApi.Models\TodoListApp.WebApi.Models.csproj" />
   </ItemGroup>
 

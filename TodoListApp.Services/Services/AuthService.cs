@@ -9,7 +9,6 @@ namespace TodoListApp.Services.Services
     using TodoListApp.Contracts.DTO;
     using TodoListApp.Contracts.Interfaces;
     using TodoListApp.Entities.Entities;
-    using TodoListApp.Infrastructure.Data.Identity;
 
     public class AuthService : IAuthService
     {
@@ -17,20 +16,17 @@ namespace TodoListApp.Services.Services
         private readonly SignInManager<User> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
-        private readonly UsersDbContext _usersDbContext;
 
         public AuthService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ITokenService tokenService,
-            RoleManager<IdentityRole<int>> roleManager,
-            UsersDbContext usersDbContext)
+            RoleManager<IdentityRole<int>> roleManager)
         {
             this._userManager = userManager;
             this._signInManager = signInManager;
             this._tokenService = tokenService;
             this._roleManager = roleManager;
-            this._usersDbContext = usersDbContext;
         }
 
         public object GetAllRoles()
@@ -63,8 +59,8 @@ namespace TodoListApp.Services.Services
                 return (false, new { message = "Invalid password" });
             }
 
-            var (token, expiresAtUtc) = await this._tokenService.CreateToken(user);
-            return (true, new { token, expiresAtUtc, message = "Successful login" });
+            string token = await this._tokenService.CreateToken(user);
+            return (true, new { token, message = "Successful login" });
         }
 
         public async Task<(bool Success, object Response)> LogoutAsync(int userId)
@@ -89,13 +85,8 @@ namespace TodoListApp.Services.Services
                 return (false, new { message = "User not found" });
             }
 
-            var (token, expiresAtUtc) = await this._tokenService.CreateToken(user);
-            return (true, new { token, expiresAtUtc, message = "Token refreshed successfully" });
-        }
-
-        public Task<(bool Success, object Response)> RefreshTokensAsync(string refreshToken)
-        {
-            throw new NotImplementedException();
+            string token = await this._tokenService.CreateToken(user);
+            return (true, new { token, message = "Token refreshed successfully" });
         }
 
         public async Task<(bool Success, object Response)> SignupAsync(RegisterDto form)
@@ -127,8 +118,8 @@ namespace TodoListApp.Services.Services
 
             _ = await this._userManager.AddToRoleAsync(user, "user");
 
-            var (token, expiresAtUtc) = await this._tokenService.CreateToken(user);
-            return (true, new { token, expiresAtUtc, message = "User created successfully" });
+            string token = await this._tokenService.CreateToken(user);
+            return (true, new { token, message = "User created successfully" });
         }
     }
 }

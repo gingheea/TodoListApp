@@ -1,18 +1,10 @@
-
 namespace TodoListApp.Contracts.Interfaces
 {
-    using System;
     using TodoListApp.Entities.Entities;
 
     public interface ITokenService
     {
-        Task<(string Token, DateTime ExpiresAtUtc)> CreateToken(User user);
-
-        string GenerateRefreshToken();
-
-        string HashRefreshToken(string refreshToken);
-
-        bool ValidateRefreshToken(string refreshToken, string tokenHash);
+        Task<string> CreateToken(User user);
 
         string? GetUserIdFromToken(string token);
     }
