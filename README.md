@@ -1,74 +1,171 @@
-# To-do List Application
+# TodoListApp — Personal Task Planner
 
-In this project, you must design and develop a web application according to the requirements that are specified in the task description.
-  * The application you have to develop must contain two web components - a web and a web API applications.
-  * The web application is a [ASP.NET Core MVC application](https://learn.microsoft.com/en-us/aspnet/core/mvc/overview).
-  * The web API application is a [controller-based ASP.NET Core Web API application](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis).
-  * The data store must be a relational database management system such as SQL Server Express.
-  * To access application data the application must use [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/).
-  * The application must use the [ASP.NET Core Identity API](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity) to manage users, passwords and profile data.
+A fullstack **personal task planning application** built with **ASP.NET Core Web API** and a **Blazor** frontend.
+The application allows users to organize their daily work by creating **task lists** and **tasks inside those lists**.
+
+The project focuses on clean architecture, authentication, and clear separation of responsibilities.
+The UI is intentionally **simple and minimal**, with the main focus on functionality and logic.
+
+---
+
+## ✨ Features
+- User registration and login
+- JWT authentication and authorization
+- Create and manage task lists
+- Create, update, and delete tasks inside lists
+- Layered (Onion/Clean-style) architecture
+- REST API with controllers
+- Swagger documentation with JWT support
+- Global error handling middleware
+
+---
+
+## 🧱 Tech Stack
+
+### Backend
+- C# / ASP.NET Core Web API
+- REST Controllers
+- Entity Framework Core
+- ASP.NET Core Identity
+- JWT (Bearer authentication)
+- Swagger (OpenAPI)
+
+### Database
+- SQL Server LocalDB
+- Separate DbContexts:
+  - UsersDb (Identity & authentication)
+  - TodoListDb (application data)
+
+### Frontend
+- Blazor
+- UI styling libraries (simple and minimal design)
+
+---
+
+## 🏗️ Architecture
+The solution follows a **layered Onion (Clean) architecture**:
+
+- **Contracts** — interfaces and abstractions
+- **Entities** — domain entities
+- **Infrastructure** — EF Core, repositories, Identity
+- **Services** — business logic and mappings
+- **WebApi** — controllers, middleware, dependency injection
+
+This approach improves maintainability, scalability, and testability.
+
+---
+
+## 🚀 Running the Project (Local)
+
+The project uses **launch profiles** defined in `launchSettings.json`.
+
+### Backend — ASP.NET Core Web API
+1. Navigate to the Web API project folder:
+```bash
+cd TodoListApp.WebApi
+
+2. Run the API using the launch profile:
+dotnet run --launch-profile "TodoListApp.WebApi"
+
+The API will be available at:
+https://localhost:7180/
+http://localhost:5017/
+
+Swagger UI:
+https://localhost:7180/swagger
+
+Frontend — Blazor Web App
+
+1. Navigate to the Blazor project folder:
+```bash
+
+cd TodoListApp.WebApp
+
+2. Run the Blazor application:
+
+dotnet run --launch-profile "TodoListApp.WebApp"
 
 
-## Backlog
+### Prerequisites
+- .NET SDK
+- SQL Server LocalDB
+- Visual Studio / Rider (optional)
 
-The application functional requirements are described in the [Functional Requirements](functional-requirements.md) document.
+### Clone the repository
+```bash
+git clone <YOUR_REPOSITORY_URL>
+cd <YOUR_PROJECT_FOLDER>
 
-The [backlog with the user stories](https://en.wikipedia.org/wiki/Product_backlog) you need to implement is given in the table below. The full list of user stories with descriptions is in the [User Stories](user-stories.md) document.
+Configuration
 
-Here are some hints for you:
-* Follow the priority order. Start working on user stories in the order listed in the "Priority" column.
-* Mark stories as completed in the [README.md](README.md) file. Once you've finished developing a user story, mark it as completed in the "Is completed?" column (use the "+" or any other text). This mark will help the mentor who will review your project understand which functionality is implemented and which is not.
-* Focus on quality. Implement as many user stories as possible, but if you see that you do not have enough time to complete lower-priority user stories, polish the user stories you have already completed.
+Update connection strings in appsettings.json:
 
-| Epic | User Story | Description                                                                     | Priority | Is completed? |
-|------|------------|---------------------------------------------------------------------------------|----------|---------------|
-| EP01 | US01       | View the list of my to-do lists.                                                | 1        |               |
-| EP01 | US02       | Add a new to-do list.                                                           | 1        |               |
-| EP01 | US03       | Delete a to-do list.                                                            | 1        |               |
-| EP01 | US04       | Edit a to-do list.                                                              | 1        |               |
-| EP02 | US05       | View the list of tasks in a to-do list.                                         | 1        |               |
-| EP02 | US06       | View the task details page.                                                     | 1        |               |
-| EP02 | US07       | Add a new to-do task.                                                           | 1        |               |
-| EP02 | US08       | Delete a to-do task.                                                            | 1        |               |
-| EP02 | US09       | Edit a to-do task.                                                              | 1        |               |
-| EP02 | US10       | Highlight tasks that are overdue.                                               | 1        |               |
-| EP03 | US11       | View a list of tasks assigned to me.                                            | 2        |               |
-| EP03 | US12       | Filter tasks in my assigned task list.                                          | 2        |               |
-| EP03 | US13       | Sort tasks in my assigned task list.                                            | 2        |               |
-| EP03 | US14       | Change the status of a task from the list of assigned tasks.                    | 2        |               |
-| EP04 | US15       | Search for tasks with specified text in the task title.                         | 3        |               |
-| EP04 | US16       | Highlight tasks that are overdue on the search result page.                     | 3        |               |
-| EP05 | US17       | View a list of tags on the task details page.                                   | 5        |               |
-| EP05 | US18       | View a list of all tags.                                                        | 5        |               |
-| EP05 | US19       | View a list of tasks tagged by a specific tag.                                  | 5        |               |
-| EP05 | US20       | Add a tag to a task.                                                            | 5        |               |
-| EP05 | US21       | Remove a tag that is added to a task.                                           | 5        |               |
-| EP06 | US22       | View the comments on the task details page.                                     | 6        |               |
-| EP06 | US23       | Add a new comment to the task.                                                  | 6        |               |
-| EP06 | US24       | Delete a comment that is added to a task.                                       | 6        |               |
-| EP06 | US25       | Edit a new comment                                                              | 6        |               |
-| EP07 | US26       | Sign up                                                                         | 7        |               |
-| EP07 | US27       | Sign in                                                                         | 7        |               |
-| EP07 | US28       | Sign out                                                                        | 7        |               |
-| EP07 | US29       | Restore password                                                                | 8        |               |
-| EP08 | US30       | Application menu                                                                | 4        |               |
+{
+  "ConnectionStrings": {
+    "UsersDb": "Server=(localdb)\\mssqllocaldb;Database=UsersDb;Trusted_Connection=True;",
+    "TodoListDb": "Server=(localdb)\\mssqllocaldb;Database=TodoListDb;Trusted_Connection=True;"
+  }
+}
 
+JWT settings:
 
-## Software Architecture
+{
+  "Jwt": {
+    "Issuer": "TodoListApp",
+    "Audience": "TodoListAppClient",
+    "Key": "CHANGE_THIS_SECRET_KEY"
+  }
+}
 
-The architecture of the application is described in the [Software Architecture](software-architecture.md) document.
+Run the Backend
 
+cd TodoListApp.WebApi
+dotnet run
 
-## Solution Requirements
+Swagger UI:
 
-The requirements for the application are described in the [Solution Requirements](solution-requirements.md) document.
+https://localhost:7180/swagger
 
+Run the Frontend
 
-## Delivery Plan
+cd <BLAZOR_PROJECT_FOLDER>
+dotnet run
 
-The [delivery plan](delivery-plan.md) contains the list of technical tasks distributed over the weeks these tasks must be delivered.
+🔐 Authentication
 
+The API uses JWT Bearer authentication.
 
-## Project Evaluation
+To access protected endpoints in Swagger:
 
-The project is evaluated using both technical evaluation criteria and an assessment of the scope and quality of the implementation of user stories. Both technical evaluation criteria and criteria for user stories are described in [Project Evaluation](project-evaluation.md) document.
+    Login to obtain a JWT token
+
+    Click Authorize
+
+    Enter:
+
+    Bearer YOUR_TOKEN
+
+🧪 Seed Data
+
+Roles and an admin user are seeded automatically in development mode.
+📸 Screenshots
+
+    Add screenshots to the /screenshots folder.
+
+    Login / Register
+
+    Task lists
+
+    Tasks inside a list
+
+    Swagger UI
+
+🗺️ Future Improvements
+
+    Refresh tokens
+
+    Unit and integration tests
+
+    Docker support
+
+    UI/UX improvements

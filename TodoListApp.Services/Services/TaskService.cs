@@ -23,5 +23,12 @@ namespace TodoListApp.Services.Services
 
             return this.mapper.Map<IEnumerable<TodoItemModel>>(tasks);
         }
+
+        public async Task<IEnumerable<TodoItemModel>> GetUserTasksByStatusAsync(int userId, string status, int pageNumber = 1, int rowCount = 10)
+        {
+            var tasks = await this._taskRepository.GetUserTasksByStatusAsync(userId, status, pageNumber, rowCount);
+
+            return this.mapper.Map<IEnumerable<TodoItemModel>>(tasks);
+        }
     }
 }

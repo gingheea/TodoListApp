@@ -28,6 +28,19 @@ namespace TodoListApp.WebApp.Service
                 return null;
             }
         }
+        public async Task<List<TodoItemModel>?> GetTasksByStatus(string status, int page = 1, int size = 10)
+        {
+            try
+            {
+                return await this._http.GetFromJsonAsync<List<TodoItemModel>>(
+                    $"api/home/dashboard/{status}?page={page}&size={size}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Failed to load tasks for status {status}: {ex.Message}");
+                return null;
+            }
+        }
 
         public async Task<bool> CreateTaskAsync(int listId, TodoItemCreateModel newTask)
         {

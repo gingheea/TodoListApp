@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -11,12 +12,18 @@ namespace TodoListApp.WebApp.Service
         private readonly HttpClient _http;
         private readonly ILocalStorageService _localStorage;
         private readonly AuthenticationStateProvider _authStateProvider;
+        private readonly NavigationManager _nav;
 
-        public AuthService(HttpClient http, ILocalStorageService localStorage, AuthenticationStateProvider authStateProvider)
+        public AuthService(
+            HttpClient http,
+            ILocalStorageService localStorage,
+            AuthenticationStateProvider authStateProvider,
+            NavigationManager nav)
         {
             this._http = http;
             this._localStorage = localStorage;
             this._authStateProvider = authStateProvider;
+            this._nav = nav;
         }
 
         public async Task<(bool Success, string? Error)> LoginAsync(string emailOrUsername, string password)
@@ -173,8 +180,10 @@ namespace TodoListApp.WebApp.Service
 
         public async Task LogoutAsync()
         {
-            await this._localStorage.RemoveItemAsync("authToken");
-            ((ApiAuthenticationStateProvider)this._authStateProvider).NotifyUserLogout();
+            await _localStorage.RemoveItemAsync("authToken");
+            ((ApiAuthenticationStateProvider)_authStateProvider).NotifyUserLogout();
+
+            _nav.NavigateTo("/login", true); // 🚀 після логаута одразу на логін
         }
 
         public async Task<string?> GetTokenAsync() =>

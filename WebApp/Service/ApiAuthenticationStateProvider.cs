@@ -3,43 +3,58 @@ namespace TodoListApp.WebApp.Service
 {
     using Blazored.LocalStorage;
     using Microsoft.AspNetCore.Components.Authorization;
+    using System.Net.Http.Headers;
     using System.Security.Claims;
     using System.Text.Json;
     public class ApiAuthenticationStateProvider : AuthenticationStateProvider
     {
         private readonly ILocalStorageService _localStorage;
+        private readonly HttpClient _httpClient;
 
-        public ApiAuthenticationStateProvider(ILocalStorageService localStorage)
+        public ApiAuthenticationStateProvider(ILocalStorageService localStorage, HttpClient httpClient)
         {
             this._localStorage = localStorage;
+            this._httpClient = httpClient;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             var token = await this._localStorage.GetItemAsync<string>("authToken");
+
             if (string.IsNullOrWhiteSpace(token))
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
+            this._httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
             var claims = this.ParseClaimsFromJwt(token);
             var identity = new ClaimsIdentity(claims, "jwt");
             var user = new ClaimsPrincipal(identity);
+
             return new AuthenticationState(user);
         }
 
         public void NotifyUserAuthentication(string token)
         {
+            this._httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
             var claims = this.ParseClaimsFromJwt(token);
             var identity = new ClaimsIdentity(claims, "jwt");
             var principal = new ClaimsPrincipal(identity);
+
             this.NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
         }
 
         public void NotifyUserLogout()
         {
+            // ❌ При логауті прибираємо заголовок
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
             var anonymous = new ClaimsPrincipal(new ClaimsIdentity());
-            this.NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(anonymous)));
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(anonymous)));
         }
 
         private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)

@@ -7,5 +7,7 @@ namespace TodoListApp.Contracts.Interfaces
     public interface ITaskRepository
     {
         Task<IEnumerable<TodoItem>> GetUserTasksAsync(int userId);
+
+        Task<IEnumerable<TodoItem>> GetUserTasksByStatusAsync(int userId, string status, int pageNumber, int rowCount);
     }
 }

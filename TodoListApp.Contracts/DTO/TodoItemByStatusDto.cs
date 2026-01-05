@@ -1,6 +1,6 @@
-namespace TodoListApp.WebApp.Model
+namespace TodoListApp.Contracts.DTO
 {
-    public class TodoItemModel
+    public class TodoItemByStatusDto
     {
         public int Id { get; set; }
 

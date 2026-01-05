@@ -19,6 +19,7 @@ namespace TodoListApp.Services.Mappings
             _ = this.CreateMap<Group, GroupDto>().ReverseMap();
             _ = this.CreateMap<User, UserDto>().ReverseMap();
             _ = this.CreateMap<TodoItem, TodoItemDto>().ReverseMap();
+            _ = this.CreateMap<TodoItem, TodoItemByStatusDto>().ReverseMap();
             _ = this.CreateMap<TodoList, TodoListDto>().ReverseMap();
 
             // Model ↔ DTO
@@ -28,6 +29,7 @@ namespace TodoListApp.Services.Mappings
             _ = this.CreateMap<TodoListDetailDto, TodoListModel>().ReverseMap();
             _ = this.CreateMap<UserDto, UserModel>().ReverseMap();
             _ = this.CreateMap<TodoItemDto, TodoItemModel>().ReverseMap();
+            _ = this.CreateMap<TodoItemByStatusDto, TodoItemModel>().ReverseMap();
 
             // Model ↔ Create/Update DTO
             _ = this.CreateMap<GroupCreateDto, GroupModel>();

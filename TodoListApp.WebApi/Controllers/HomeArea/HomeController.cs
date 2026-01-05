@@ -1,6 +1,7 @@
 #pragma warning disable SA1649
 namespace TodoListApp.WebApi.Controllers.HomeArea
 {
+    using System.Collections.Generic;
     using System.Security.Claims;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -14,12 +15,16 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
     public class DashboardController : ControllerBase
     {
         private readonly TaskService _taskService;
+        private readonly AutoMapper.IMapper _mapper;
 
-        public DashboardController(TaskService taskService)
+
+        public DashboardController(TaskService taskService, AutoMapper.IMapper mapper)
         {
             this._taskService = taskService;
+            this._mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<DashboardDto>> GetDashboardInfo()
         {
@@ -43,6 +48,19 @@ namespace TodoListApp.WebApi.Controllers.HomeArea
                 TotalCount = total,
                 CompletionPercent = total == 0 ? 0 : (double)completed / total * 100,
             };
+
+            return this.Ok(dto);
+        }
+
+        [Authorize]
+        [HttpGet("{status}")]
+        public async Task<IActionResult> GetTasksByStatus([FromRoute] string status, [FromQuery] int page = 1, [FromQuery] int size = 10)
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _ = int.TryParse(userId, out int userIdInt);
+
+            var tasks = await this._taskService.GetUserTasksByStatusAsync(userIdInt, status, page, size);
+            var dto = this._mapper.Map<IEnumerable<TodoItemByStatusDto>>(tasks);
 
             return this.Ok(dto);
         }

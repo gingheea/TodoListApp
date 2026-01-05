@@ -1,0 +1,365 @@
+@page "/home/{status}/tasks"
+@using Blazored.LocalStorage
+@using TodoListApp.WebApp.Model
+@using TodoListApp.WebApp.Service
+@using TodoListApp.WebApp.src.Components
+@inject TodoItemService TodoItemService
+@inject NavigationManager NavManager
+@inject IJSRuntime JSRuntime
+@inject ILocalStorageService LocalStorage
+
+
+<main class="page-wrapper">
+    <section id="task-list" class="task-list-section  dashboard-overview">
+        <Navigation />
+        <div class="task-panel-wrapper">
+            <div class="main-task-column">
+                <div class="task-header">
+                    <h2 class="section-title">My Tasks</h2>
+                    <p class="section-subtitle">Tasks for this list</p>
+                </div>
+
+                <input type="text" class="search-input"
+                       placeholder="Search tasks..."
+                       @bind="searchQuery" @bind:event="oninput" />
+
+                <button class="btn-show-create" @onclick="CreateNewTask">
+                    + Create Task
+                </button>
+
+
+                <div class="tasks-container">
+                    @if (tasks == null)
+                    {
+                        <p>Loading tasks...</p>
+                    }
+                    else if (tasks.Count == 0 && pageNumber == 1)
+                    {
+                        <div class="empty-state">
+                            <img src="/images/empty-tasks.svg" alt="No tasks" class="empty-image" />
+                            <h3>No tasks yet</h3>
+                            <p>Create your first task to start organizing your work!</p>
+                            <button class="btn btn-primary" @onclick="CreateNewTask">Create a Task</button>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var task in tasks)
+                        {
+                            <div class="task-item @(task.IsCompleted ? "completed" : GetTaskStatusClass(task))">
+                                <button role="button" aria-label="Drag to reorder" class="drag-handle">
+                                    <svg width="20" height="20" viewBox="0 0 24 24">
+                                        <path d="M4 5h16M4 12h16M4 19h16"
+                                              fill="none" stroke="currentColor" stroke-width="2"
+                                              stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                </button>
+
+                                <div class="task-content">
+                                    @if (editingTaskId == task.Id)
+                                    {
+                                        <div class="task-content" @onkeyup="@(e => HandleEditKey(e, task))">
+                                            <input type="text" class="edit-list-input" @bind="editTitle" autofocus />
+
+                                            <textarea class="edit-list-input"
+                                                      @bind="editDescription"
+                                                      @bind:event="oninput"
+                                                      placeholder="Description"></textarea>
+
+                                            <input type="date" class="edit-list-input" @bind="editDueDate" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <h3 class="task-title @(task.IsCompleted ? "completed-title" : "")">@task.Title</h3>
+                                        @if (!string.IsNullOrWhiteSpace(task.Description))
+                                        {
+                                            <p class="task-meta">@task.Description</p>
+                                        }
+                                    }
+
+                                    <div class="task-details">
+                                        @if (task.DueDate != null)
+                                        {
+                                            <span class="task-due">Due: @task.DueDate?.ToString("dd.MM.yyyy")</span>
+                                        }
+                                        <span class="task-status @(task.IsCompleted ? "completed" : "")">
+                                            Status: @(task.IsCompleted ? "completed" : GetTaskStatusText(task))
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="task-controls">
+                                    <button aria-label="Edit task" class="task-action" @onclick="() => StartEditing(task)">
+                                        <svg width="18" height="18" viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-width="2"
+                                               stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path>
+                                            </g>
+                                        </svg>
+                                    </button>
+
+                                    <button aria-label="Complete task" class="task-action" @onclick="() => ToggleComplete(task)">
+                                        <svg width="18" height="18" viewBox="0 0 24 24">
+                                            <path d="M20 6L9 17l-5-5"
+                                                  fill="none" stroke="currentColor" stroke-width="2"
+                                                  stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                    </button>
+
+                                    <button aria-label="Delete task" class="task-action delete" @onclick="() => DeleteTask(task.TodoListId ,task.Id)">
+                                        <svg width="18" height="18" viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-width="2"
+                                               stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"></polyline>
+                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m5 0V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2"></path>
+                                                <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                <line x1="14" y1="11" x2="14" y2="17"></line>
+                                            </g>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="pagination">
+                    <button class="btn" @onclick="PrevPage" disabled="@(pageNumber <= 1)">
+                        Previous
+                    </button>
+
+                    <span>Page @pageNumber</span>
+
+                    <button class="btn" @onclick="NextPage" disabled="@(tasks == null || tasks.Count < pageSize)">
+                        Next
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <button aria-label="Quick add task" class="floating-add" @onclick="CreateNewTask">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+                <path d="M5 12h14m-7-7v14"
+                      fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </button>
+
+    </section>
+    <Footer />
+</main>
+
+@code {
+    [Parameter] public string status { get; set; }
+
+    private List<TodoItemModel>? tasks;
+
+    private string searchQuery = "";
+
+    private int? editingTaskId = null;
+    private string editTitle = string.Empty;
+    private string editDescription = string.Empty;
+    private DateTime? editDueDate = null;
+
+    private ElementReference createTaskInputRef;
+    private string activeFilter = "All";
+
+    private int pageNumber = 1;
+    private int pageSize = 5;
+    private int totalTasks => tasks?.Count ?? 0;
+    private int completedTasks => tasks?.Count(t => t.IsCompleted) ?? 0;
+
+    private double progressPercent => totalTasks == 0
+        ? 0
+        : Math.Round((double)completedTasks / totalTasks * 100, 1);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await LocalStorage.GetItemAsStringAsync("authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            NavManager.NavigateTo("/login", true);
+            return;
+        }
+
+        await LoadTasks();
+    }
+
+    private async Task LoadTasks()
+    {
+        tasks = await TodoItemService.GetTasksByStatus(status, pageNumber, pageSize);
+
+        if (tasks != null && tasks.Count == 0 && pageNumber > 1)
+        {
+            pageNumber--;
+            tasks = await TodoItemService.GetTasksByStatus(status, pageNumber, pageSize);
+        }
+    }
+
+    private async Task NextPage()
+    {
+        pageNumber++;
+        await LoadTasks();
+    }
+
+    private async Task PrevPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await LoadTasks();
+        }
+    }
+
+    private void SetFilter(string filter)
+    {
+        activeFilter = filter;
+        StateHasChanged();
+    }
+
+
+
+    private string GetTaskStatusClass(TodoItemModel task)
+    {
+        if (task.DueDate == null)
+        {
+            return "";
+        }
+
+        var today = DateTime.Today;
+        var daysLeft = (task.DueDate.Value.Date - today).TotalDays;
+
+        if (daysLeft < 0)
+        {
+            return "overdue-status";
+        }
+        if (daysLeft <= 2)
+        {
+            return "almost-due-status";
+        }
+        return "";
+    }
+
+    private string GetTaskStatusText(TodoItemModel task)
+    {
+        if (task.DueDate == null)
+        {
+            return "In progress";
+        }
+
+        var today = DateTime.Today;
+        var daysLeft = (task.DueDate.Value.Date - today).TotalDays;
+
+        if (daysLeft < 0)
+        {
+            return "Overdue";
+        }
+        if (daysLeft <= 2)
+        {
+            return "Due soon";
+        }
+
+
+        return "In progress";
+    }
+
+
+    private void StartEditing(TodoItemModel task)
+    {
+        editingTaskId = task.Id;
+        editTitle = task.Title;
+        editDescription = task.Description ?? "";
+        editDueDate = task.DueDate;
+
+    }
+
+    private async Task SaveTaskChanges(TodoItemModel task)
+    {
+        var updatedTask = new TodoItemUpdateModel
+            {
+                Title = editTitle,
+                Description = editDescription,
+                DueDate = editDueDate ?? DateTime.Today,
+                IsCompleted = task.IsCompleted
+            };
+
+        var success = await TodoItemService.UpdateTaskAsync(task.TodoListId, task.Id, updatedTask);
+        if (success)
+        {
+            task.Title = editTitle;
+            task.Description = editDescription;
+            task.DueDate = editDueDate;
+
+            editingTaskId = null;
+            await LoadTasks();
+
+            StateHasChanged();
+        }
+    }
+
+    private void CancelEditing()
+    {
+        editingTaskId = null;
+    }
+
+
+
+    private async Task HandleEditKey(KeyboardEventArgs e, TodoItemModel task)
+    {
+        if (e.Key == "Enter")
+        {
+            await Task.Delay(1);
+            await SaveTaskChanges(task);
+        }
+        else if (e.Key == "Escape")
+        {
+            editingTaskId = null;
+        }
+    }
+
+    private async Task DeleteTask(int listId,int taskId)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this task?");
+        if (!confirmed) return;
+
+        var success = await TodoItemService.DeleteTaskAsync(listId, taskId);
+        if (success)
+        {
+            await LoadTasks();
+
+            StateHasChanged();
+        }
+
+    }
+
+    private async Task ToggleComplete(TodoItemModel task)
+    {
+        var desired = !task.IsCompleted;
+        Console.WriteLine($"Toggling task {task.Id} in list {task.TodoListId} to {(desired ? "completed" : "incomplete")}");
+        var ok = await TodoItemService.ToggleCompleteAsync(task.TodoListId, task.Id, desired);
+
+        if (ok)
+        {
+            task.IsCompleted = desired;
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine("Failed to toggle status");
+        }
+    }
+
+    private async Task FocusCreateTaskInput()
+    {
+        await Task.Delay(100);
+        await createTaskInputRef.FocusAsync();
+    }
+
+    private void CreateNewTask()
+    {
+        NavManager.NavigateTo("/home/todolist", true);
+    }
+}
