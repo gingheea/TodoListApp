@@ -44,7 +44,7 @@
                     }
                     else
                     {
-                        @foreach (var task in tasks)
+                        @foreach (var task in FilteredTasks)
                         {
                             <div class="task-item @(task.IsCompleted ? "completed" : GetTaskStatusClass(task))">
                                 <button role="button" aria-label="Drag to reorder" class="drag-handle">
@@ -198,6 +198,25 @@
             tasks = await TodoItemService.GetTasksByStatus(status, pageNumber, pageSize);
         }
     }
+
+    private IEnumerable<TodoItemModel> FilteredTasks
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+                return tasks ?? Enumerable.Empty<TodoItemModel>();
+
+            var q = searchQuery.Trim().ToLower();
+
+            return tasks!.Where(t =>
+                (!string.IsNullOrWhiteSpace(t.Title) &&
+                 t.Title.ToLower().Contains(q)) ||
+                (!string.IsNullOrWhiteSpace(t.Description) &&
+                 t.Description.ToLower().Contains(q))
+            );
+        }
+    }
+
 
     private async Task NextPage()
     {
